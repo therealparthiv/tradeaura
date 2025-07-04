@@ -16,7 +16,25 @@ code {
   margin-left: 40px;
 }
 
-.footer-bg {
-  background-color: rgb(250, 250, 250) !important;
-  padding: 2rem 0;
+#supportHero {
+  background-color: rgb(56, 126, 209);
+  color: white;
+}
+
+#supportHero a {
+  color: white;
+}
+
+#supportWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 150px;
+}
+
+#supportHero input {
+  padding: 20px 50px;
+  width: 100%;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
 }
