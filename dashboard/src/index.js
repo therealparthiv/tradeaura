@@ -4,13 +4,17 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import Home from "./components/Home";
 
+import { GeneralContextProvider } from "./components/GeneralContext"; // ✅ import
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/*" element={<Home />} />
-      </Routes>
+      <GeneralContextProvider>
+        <Routes>
+          <Route path="/*" element={<Home />} />
+        </Routes>
+      </GeneralContextProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

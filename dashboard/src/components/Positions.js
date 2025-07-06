@@ -1,69 +1,91 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import axios from "../utils/axiosInstance";
 import { VerticalGraph } from "./VerticalGraph";
 
 const Positions = () => {
-  const [allPositions, setAllPositions] = useState([]);
+  const [positions, setPositions] = useState([]);
+  const [livePrices, setLivePrices] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost:3002/allPositions").then((res) => {
-      setAllPositions(res.data);
-    });
+    const fetchPositions = async () => {
+      try {
+        const res = await axios.get("/api/positions");
+        setPositions(res.data);
+
+        const prices = {};
+        for (let pos of res.data) {
+          const priceRes = await axios.get(`/api/price/${pos.name}.NS`);
+          prices[pos.name] = priceRes.data.price;
+        }
+
+        setLivePrices(prices);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error loading positions", err);
+        setLoading(false);
+      }
+    };
+
+    fetchPositions();
   }, []);
 
-  const labels = allPositions.map((stock) => stock.name);
+  const getLTP = (symbol) => livePrices[symbol] || 0;
 
+  const labels = positions.map((s) => s.name);
   const data = {
     labels,
     datasets: [
       {
-        label: "Stock Price",
-        data: allPositions.map((stock) => stock.price),
+        label: "LTP",
+        data: positions.map((s) => getLTP(s.name)),
         backgroundColor: "rgba(53, 162, 235, 0.5)",
       },
     ],
   };
 
+  if (loading) return <p>Loading positions...</p>;
+
   return (
     <>
-      <h3 className="title">Positions ({allPositions.length})</h3>
+      <h3 className="title">Open Positions ({positions.length})</h3>
 
       <div className="order-table">
         <table>
-          <tr>
-            <th>Product</th>
-            <th>Instrument</th>
-            <th>Qty.</th>
-            <th>Avg. cost</th>
-            <th>LTP</th>
-            <th>Cur. val</th>
-            <th>P&L</th>
-            <th>Net chg.</th>
-            <th>Day chg.</th>
-          </tr>
+          <thead>
+            <tr>
+              <th>Instrument</th>
+              <th>Side</th>
+              <th>Qty</th>
+              <th>Avg. cost</th>
+              <th>LTP</th>
+              <th>Cur. val</th>
+              <th>P&L</th>
+            </tr>
+          </thead>
+          <tbody>
+            {positions.map((pos, index) => {
+              const ltp = getLTP(pos.name);
+              const curValue = ltp * pos.qty;
+              const invested = pos.avg * pos.qty;
+              const pnl = curValue - invested;
+              const isProfit = pnl >= 0;
 
-          {allPositions.map((stock, index) => {
-            const curValue = stock.price * stock.qty;
-            const isProfit = curValue - stock.avg * stock.qty >= 0.0;
-            const profClass = isProfit ? "profit" : "loss";
-            const dayClass = stock.isLoss ? "loss" : "profit";
-
-            return (
-              <tr key={index}>
-                <td>{stock.product}</td>
-                <td>{stock.name}</td>
-                <td>{stock.qty}</td>
-                <td>{stock.avg.toFixed(2)}</td>
-                <td>{stock.price.toFixed(2)}</td>
-                <td>{curValue.toFixed(2)}</td>
-                <td className={profClass}>
-                  {(curValue - stock.avg * stock.qty).toFixed(2)}
-                </td>
-                <td className={profClass}>{stock.net}</td>
-                <td className={dayClass}>{stock.day}</td>
-              </tr>
-            );
-          })}
+              return (
+                <tr key={index}>
+                  <td>{pos.name}</td>
+                  <td>{pos.side}</td>
+                  <td>{pos.qty}</td>
+                  <td>{pos.avg.toFixed(2)}</td>
+                  <td>{ltp.toFixed(2)}</td>
+                  <td>{curValue.toFixed(2)}</td>
+                  <td className={isProfit ? "profit" : "loss"}>
+                    {pnl.toFixed(2)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
 

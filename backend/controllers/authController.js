@@ -21,7 +21,11 @@ exports.signup = async (req, res) => {
     const token = createToken(user._id);
 
     res
-      .cookie("token", token, { httpOnly: true })
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "Lax",
+        secure: false, // ✅ false for localhost, true in prod with HTTPS
+      })
       .json({ message: "User registered", user: { name, email } });
   } catch (err) {
     res.status(500).json({ message: "Signup error", error: err.message });
@@ -39,8 +43,13 @@ exports.login = async (req, res) => {
     if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
     const token = createToken(user._id);
+
     res
-      .cookie("token", token, { httpOnly: true })
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "Lax", // ✅ cross-origin cookie sharing
+        secure: false, // ✅ only false for local testing
+      })
       .json({ message: "Login successful", user: { name: user.name, email } });
   } catch (err) {
     res.status(500).json({ message: "Login error", error: err.message });
