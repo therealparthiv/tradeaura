@@ -2,45 +2,33 @@ import { useState } from "react";
 import axios from "../../utils/axiosInstance";
 import { useNavigate, Link } from "react-router-dom";
 
-const Signup = () => {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const navigate = useNavigate();
+const Login = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // reset any previous errors
+    setError(""); // clear any previous errors
     try {
-      await axios.post("/api/auth/signup", form);
-      navigate("/login");
+      await axios.post("/api/auth/login", form);
+      window.location.href = "http://localhost:3001"; // redirect to dashboard app
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
     <div className="container mt-5" style={{ maxWidth: "450px" }}>
       <div className="card p-4 shadow">
-        <h2 className="text-center mb-4">Create an Account</h2>
+        <h2 className="text-center mb-4">Welcome Back</h2>
 
-        {/* ❗ Show error if signup fails */}
         {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Name</label>
-            <input
-              name="name"
-              className="form-control"
-              placeholder="John Doe"
-              onChange={handleChange}
-              required
-            />
-          </div>
-
           <div className="mb-3">
             <label className="form-label">Email</label>
             <input
@@ -65,18 +53,17 @@ const Signup = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary w-100">
-            Sign Up
+          <button type="submit" className="btn btn-success w-100">
+            Log In
           </button>
         </form>
 
-        {/* 🔗 Already registered? */}
         <p className="text-center mt-3">
-          Already have an account? <Link to="/login">Log in here</Link>
+          New user? <Link to="/signup">Create an account</Link>
         </p>
       </div>
     </div>
   );
 };
 
-export default Signup;
+export default Login;

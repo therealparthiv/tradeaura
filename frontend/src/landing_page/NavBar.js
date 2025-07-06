@@ -1,6 +1,29 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "../utils/axiosInstance";
+
 function NavBar() {
+  const navigate = useNavigate();
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get("/api/auth/profile")
+      .then(() => setLoggedIn(true))
+      .catch(() => setLoggedIn(false));
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/auth/logout");
+      setLoggedIn(false);
+      alert("Logged out");
+      navigate("/login");
+    } catch (err) {
+      alert("Logout failed");
+    }
+  };
+
   return (
     <nav
       className="navbar navbar-expand-lg border-bottom"
@@ -26,14 +49,13 @@ function NavBar() {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <form className="d-flex" role="search">
             <ul className="navbar-nav mb-lg-0">
-              <li className="nav-item">
-                <Link
-                  className="nav-link active"
-                  aria-current="page"
-                  to="/signup">
-                  Signup
-                </Link>
-              </li>
+              {!loggedIn && (
+                <li className="nav-item">
+                  <Link className="nav-link active" to="/signup">
+                    Signup
+                  </Link>
+                </li>
+              )}
               <li className="nav-item">
                 <Link className="nav-link active" to="/about">
                   About
@@ -54,6 +76,16 @@ function NavBar() {
                   Support
                 </Link>
               </li>
+              {loggedIn && (
+                <li className="nav-item">
+                  <button
+                    className="btn btn-outline-danger ms-3"
+                    onClick={handleLogout}
+                    type="button">
+                    Logout
+                  </button>
+                </li>
+              )}
             </ul>
           </form>
         </div>
