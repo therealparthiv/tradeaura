@@ -1,0 +1,143 @@
+/* Global container */
+.holdings-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 2rem;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.07);
+}
+
+/* Title */
+.title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+  text-align: center;
+}
+
+/* Holdings Table Wrapper */
+.holdings-table {
+  overflow-x: auto;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  backdrop-filter: blur(8px);
+}
+
+/* Table Base */
+.holdings-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  font-size: 0.95rem;
+}
+
+/* Table Headers */
+.holdings-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #475569;
+  background-color: #f1f5f9;
+  border-radius: 10px 10px 0 0;
+}
+
+/* Table Body Cells */
+.holdings-table td {
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  vertical-align: middle;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: background 0.3s ease;
+}
+
+/* Row hover */
+.holdings-table tr:hover td {
+  background-color: #f9fafb;
+}
+
+/* Stock symbol & tags layout */
+.stock-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.symbol {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+/* Exchange / CNC tags */
+.exchange-tag,
+.cnc-tag {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 50px;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.cnc-tag {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+/* Profit / Loss Styles */
+.profit {
+  color: #16a34a; /* green */
+  font-weight: 600;
+}
+
+.loss {
+  color: #dc2626; /* red */
+  font-weight: 600;
+}
+
+/* Summary box below table */
+.summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.summary div {
+  flex: 1;
+}
+
+.summary h4 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.summary p {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* Loader text */
+.loading {
+  text-align: center;
+  color: #64748b;
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
