@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../utils/axiosInstance";
 import { VerticalGraph } from "./VerticalGraph";
-
+import "./Positions.css";
 const Positions = () => {
   const [positions, setPositions] = useState([]);
   const [livePrices, setLivePrices] = useState({});
@@ -15,8 +15,21 @@ const Positions = () => {
 
         const prices = {};
         for (let pos of res.data) {
-          const priceRes = await axios.get(`/api/price/${pos.name}.NS`);
-          prices[pos.name] = priceRes.data.price;
+          const originalName = pos.name;
+          let symbol = originalName;
+
+          if (!symbol.endsWith(".NS") && !symbol.endsWith(".BO")) {
+            symbol += ".NS"; // default to NSE
+          }
+
+          try {
+            const priceRes = await axios.get(`/api/price/${symbol}`);
+            const fetchedPrice = parseFloat(priceRes.data.price);
+            prices[originalName] = isNaN(fetchedPrice) ? 0 : fetchedPrice;
+          } catch (err) {
+            console.warn(`Price fetch failed for ${symbol}`);
+            prices[originalName] = 0;
+          }
         }
 
         setLivePrices(prices);
@@ -30,7 +43,17 @@ const Positions = () => {
     fetchPositions();
   }, []);
 
-  const getLTP = (symbol) => livePrices[symbol] || 0;
+  const getLTP = (symbol) => {
+    const price = livePrices[symbol];
+    return typeof price === "number" ? price : 0;
+  };
+
+  const getExchange = (name) => {
+    if (name.endsWith(".BO")) return "BSE";
+    return "NSE";
+  };
+
+  const stripExtension = (name) => name.replace(/\.NS|\.BO/, "");
 
   const labels = positions.map((s) => s.name);
   const data = {
@@ -44,7 +67,7 @@ const Positions = () => {
     ],
   };
 
-  if (loading) return <p>Loading positions...</p>;
+  if (loading) return <p className="loading">Loading positions...</p>;
 
   return (
     <>
@@ -73,14 +96,23 @@ const Positions = () => {
 
               return (
                 <tr key={index}>
-                  <td>{pos.name}</td>
-                  <td>{pos.side}</td>
+                  <td>
+                    <div className="stock-info">
+                      <span className="symbol">{stripExtension(pos.name)}</span>
+                      <span className="exchange-tag">
+                        {getExchange(pos.name)}
+                      </span>
+                    </div>
+                  </td>
+                  <td>{pos.side.toUpperCase()}</td>
                   <td>{pos.qty}</td>
-                  <td>{pos.avg.toFixed(2)}</td>
-                  <td>{ltp.toFixed(2)}</td>
-                  <td>{curValue.toFixed(2)}</td>
+                  <td>₹{pos.avg.toFixed(2)}</td>
+                  <td>₹{ltp.toFixed(2)}</td>
+                  <td>₹{curValue.toFixed(2)}</td>
                   <td className={isProfit ? "profit" : "loss"}>
-                    {pnl.toFixed(2)}
+                    {pnl < 0
+                      ? `-₹${Math.abs(pnl).toFixed(2)}`
+                      : `₹${pnl.toFixed(2)}`}
                   </td>
                 </tr>
               );
