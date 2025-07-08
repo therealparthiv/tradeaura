@@ -1,0 +1,129 @@
+/* Summary Container Styling */
+.username h6 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 1.5rem 0;
+}
+
+/* Section Card Styling */
+.section {
+  background: linear-gradient(to right, #f9fafb, #f1f5f9);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+/* Section Titles */
+.section > span > p {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+/* Inner Summary Boxes (Margin, P&L, etc.) */
+.data {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Left-side big number */
+.data .first {
+  flex: 1;
+}
+
+.data .first h3 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.data .first small {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 6px;
+  color: inherit;
+}
+
+/* Right-side smaller details */
+.data .second {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.data .second p {
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  color: #334155;
+}
+
+/* Profit / Loss Colors */
+.profit {
+  color: #10b981;
+}
+
+.loss {
+  color: #ef4444;
+}
+
+/* Live Price Grid Styling */
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Responsive improvements */
+@media screen and (max-width: 768px) {
+  .data {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .data .first h3 {
+    font-size: 1.8rem;
+  }
+
+  .data .second p {
+    font-size: 1rem;
+  }
+}
+/* Profit and Loss Coloring */
+.profit {
+  color: #16a34a !important; /* Tailwind green-600 */
+}
+
+.loss {
+  color: #dc2626 !important; /* Tailwind red-600 */
+}
+
+.data .first h3 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.data .first h3 small {
+  font-size: 1rem;
+  margin-left: 8px;
+  opacity: 0.85;
+}

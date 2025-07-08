@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../utils/axiosInstance";
 import { VerticalGraph } from "./VerticalGraph";
+import "./Holdings.css";
 
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
@@ -11,18 +12,24 @@ const Holdings = () => {
     const fetchHoldings = async () => {
       try {
         const res = await axios.get("/api/holdings");
-        console.log("Holdings fetched:", res.data);
         setAllHoldings(res.data);
 
-        // Fetch LTP for each
         const prices = {};
         for (let stock of res.data) {
+          const originalName = stock.name;
+          let symbol = originalName;
+
+          if (!symbol.endsWith(".NS") && !symbol.endsWith(".BO")) {
+            symbol += ".NS";
+          }
+
           try {
-            const priceRes = await axios.get(`/api/price/${stock.name}.NS`);
-            prices[stock.name] = priceRes.data.price;
+            const priceRes = await axios.get(`/api/price/${symbol}`);
+            const fetchedPrice = parseFloat(priceRes.data.price);
+            prices[originalName] = isNaN(fetchedPrice) ? 0 : fetchedPrice;
           } catch (err) {
-            console.warn(`LTP fetch failed for ${stock.name}`);
-            prices[stock.name] = 0;
+            console.warn(`LTP fetch failed for ${symbol}`);
+            prices[originalName] = 0;
           }
         }
 
@@ -37,7 +44,17 @@ const Holdings = () => {
     fetchHoldings();
   }, []);
 
-  const getLTP = (symbol) => livePrices[symbol] || 0;
+  const getLTP = (symbol) => {
+    const price = livePrices[symbol];
+    return typeof price === "number" ? price : 0;
+  };
+
+  const formatExchange = (name) => {
+    if (name.endsWith(".BO")) return "BSE";
+    return "NSE";
+  };
+
+  const stripExtension = (name) => name.replace(/\.NS|\.BO/, "");
 
   const totalInvestment = allHoldings.reduce(
     (sum, stock) => sum + stock.avg * stock.qty,
@@ -63,21 +80,22 @@ const Holdings = () => {
     ],
   };
 
-  if (loading) return <p>Loading Holdings...</p>;
+  if (loading) return <p className="loading">Loading Holdings...</p>;
 
   return (
-    <>
-      <h3 className="title">Holdings ({allHoldings.length})</h3>
+    <div className="holdings-container">
+      <h3 className="title">Your Holdings ({allHoldings.length})</h3>
 
-      <div className="order-table">
+      <div className="holdings-table">
         <table>
           <thead>
             <tr>
               <th>Instrument</th>
-              <th>Qty.</th>
-              <th>Avg. cost</th>
+              <th>Qty</th>
+              <th>Avg Cost</th>
               <th>LTP</th>
-              <th>Cur. val</th>
+              <th>% Gain</th>
+              <th>Current Value</th>
               <th>P&L</th>
             </tr>
           </thead>
@@ -87,17 +105,35 @@ const Holdings = () => {
               const curValue = ltp * stock.qty;
               const invested = stock.avg * stock.qty;
               const pnl = curValue - invested;
-              const isProfit = pnl >= 0;
+              const percentGain = ((ltp - stock.avg) / stock.avg) * 100;
+
+              const isProfit = pnl > 0;
+              const isLoss = pnl < 0;
 
               return (
                 <tr key={index}>
-                  <td>{stock.name}</td>
+                  <td>
+                    <div className="stock-info">
+                      <span className="symbol">
+                        {stripExtension(stock.name)}
+                      </span>
+                      <span className="exchange-tag">
+                        {formatExchange(stock.name)}
+                      </span>
+                      <span className="cnc-tag">CNC</span>
+                    </div>
+                  </td>
                   <td>{stock.qty}</td>
                   <td>₹{stock.avg.toFixed(2)}</td>
                   <td>₹{ltp.toFixed(2)}</td>
+                  <td className={percentGain >= 0 ? "profit" : "loss"}>
+                    {percentGain.toFixed(2)}%
+                  </td>
                   <td>₹{curValue.toFixed(2)}</td>
-                  <td className={isProfit ? "profit" : "loss"}>
-                    ₹{pnl.toFixed(2)}
+                  <td className={isProfit ? "profit" : isLoss ? "loss" : ""}>
+                    {isLoss
+                      ? `-₹${Math.abs(pnl).toFixed(2)}`
+                      : `₹${pnl.toFixed(2)}`}
                   </td>
                 </tr>
               );
@@ -106,25 +142,34 @@ const Holdings = () => {
         </table>
       </div>
 
-      <div className="row mt-4">
-        <div className="col">
-          <h5>₹{totalInvestment.toFixed(2)}</h5>
-          <p>Total investment</p>
+      <div className="summary">
+        <div>
+          <h4>₹{totalInvestment.toFixed(2)}</h4>
+          <p>Invested</p>
         </div>
-        <div className="col">
-          <h5>₹{totalCurrent.toFixed(2)}</h5>
-          <p>Current value</p>
+        <div>
+          <h4>₹{totalCurrent.toFixed(2)}</h4>
+          <p>Current Value</p>
         </div>
-        <div className="col">
-          <h5 className={totalPnl >= 0 ? "profit" : "loss"}>
-            ₹{totalPnl.toFixed(2)} ({pnlPercent.toFixed(2)}%)
-          </h5>
+        <div>
+          <h4>
+            <span className={totalPnl < 0 ? "loss" : "profit"}>
+              {totalPnl < 0
+                ? `-₹${Math.abs(totalPnl).toFixed(2)}`
+                : `₹${totalPnl.toFixed(2)}`}
+            </span>
+            &nbsp;
+            <span className={totalPnl < 0 ? "loss" : "profit"}>
+              ({pnlPercent.toFixed(2)}%)
+            </span>
+          </h4>
+
           <p>Total P&L</p>
         </div>
       </div>
 
       <VerticalGraph data={data} />
-    </>
+    </div>
   );
 };
 

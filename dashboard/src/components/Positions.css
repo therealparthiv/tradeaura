@@ -1,0 +1,14 @@
+.symbol {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.exchange-tag {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  border-radius: 4px;
+  margin-left: 6px;
+  text-transform: uppercase;
+}
