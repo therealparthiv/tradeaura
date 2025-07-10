@@ -15,7 +15,7 @@ const Home = () => {
       .then(() => setAuthChecked(true))
       .catch(() => {
         alert("Unauthorized! Redirecting to login...");
-        window.location.href = "http://localhost:3000/login"; // from frontend app
+        window.location.href = "https://tradeaura.vercel.app/login"; // from frontend app
       });
   }, []);
 
