@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "dashboard-tradeaura": {
+      "rootDirectory": "dashboard"
+    },
+    "tradeaura": {
+      "rootDirectory": "frontend"
+    }
+  }
+}
