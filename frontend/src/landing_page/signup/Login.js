@@ -15,7 +15,7 @@ const Login = () => {
     setError(""); // clear any previous errors
     try {
       await axios.post("/api/auth/login", form);
-      window.location.href = "https://dashboard-tradeaura.vercel.app/"; // redirect to dashboard app
+      window.location.href = "http://localhost:3001"; // redirect to dashboard app
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
