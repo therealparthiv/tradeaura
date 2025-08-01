@@ -1,65 +1,49 @@
-import React, { useState, useEffect } from "react";
-import BuyActionWindow from "./BuyActionWindow";
-import axios from "../utils/axiosInstance";
+// frontend/src/components/GeneralContext.js
 
-const GeneralContext = React.createContext({
-  openBuyWindow: () => {},
-  closeBuyWindow: () => {},
-  orders: [],
-  holdings: [],
-  positions: [],
-  refreshAll: () => {},
-});
+import React, { useState, useEffect } from "react";
+import axios from "../utils/axiosInstance";
+import BuyActionWindow from "./BuyActionWindow";
+
+const GeneralContext = React.createContext();
 
 export const GeneralContextProvider = (props) => {
+  const [watchlist, setWatchlist] = useState([]);
   const [isBuyWindowOpen, setIsBuyWindowOpen] = useState(false);
   const [selectedStockUID, setSelectedStockUID] = useState("");
   const [orderMode, setOrderMode] = useState("BUY");
 
-  const [orders, setOrders] = useState([]);
-  const [holdings, setHoldings] = useState([]);
-  const [positions, setPositions] = useState([]);
+  const refreshWatchlist = async () => {
+    try {
+      const res = await axios.get("/api/watchlist");
+      setWatchlist(res.data);
+    } catch (err) {
+      console.error("Watchlist fetch error", err);
+    }
+  };
 
-  const handleOpenBuyWindow = (uid, mode = "BUY") => {
+  const openBuyWindow = (uid, mode = "BUY") => {
     setSelectedStockUID(uid);
     setOrderMode(mode);
     setIsBuyWindowOpen(true);
   };
 
-  const handleCloseBuyWindow = () => {
+  const closeBuyWindow = () => {
     setIsBuyWindowOpen(false);
     setSelectedStockUID("");
     setOrderMode("BUY");
   };
 
-  const refreshAll = async () => {
-    try {
-      const [o, h, p] = await Promise.all([
-        axios.get("/api/orders"),
-        axios.get("/api/holdings"),
-        axios.get("/api/positions"),
-      ]);
-      setOrders(o.data);
-      setHoldings(h.data);
-      setPositions(p.data);
-    } catch (err) {
-      console.error("Error fetching user data:", err.message);
-    }
-  };
-
   useEffect(() => {
-    refreshAll(); // Fetch on mount
+    refreshWatchlist();
   }, []);
 
   return (
     <GeneralContext.Provider
       value={{
-        openBuyWindow: handleOpenBuyWindow,
-        closeBuyWindow: handleCloseBuyWindow,
-        orders,
-        holdings,
-        positions,
-        refreshAll,
+        watchlist,
+        refreshWatchlist,
+        openBuyWindow,
+        closeBuyWindow,
       }}>
       {props.children}
       {isBuyWindowOpen && (
