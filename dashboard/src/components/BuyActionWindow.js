@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
 import "./BuyActionWindow.css";
@@ -9,14 +8,12 @@ const BuyActionWindow = ({ uid, mode }) => {
   const [stockPrice, setStockPrice] = useState(0.0);
   const { closeBuyWindow } = useContext(GeneralContext);
 
-  // ✅ Fetch price on mount
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3002/api/price/${uid}.NS`,
-          { withCredentials: true } // ✅ in case protected route
-        );
+        const res = await axios.get(`http://localhost:3002/api/price/${uid}`, {
+          withCredentials: true,
+        });
         if (res.data?.price) {
           setStockPrice(res.data.price);
         }
@@ -38,7 +35,7 @@ const BuyActionWindow = ({ uid, mode }) => {
           mode: mode || "BUY",
         },
         {
-          withCredentials: true, // ✅ Send cookie for auth
+          withCredentials: true,
         }
       );
       alert(`${mode} order placed!`);
@@ -62,7 +59,6 @@ const BuyActionWindow = ({ uid, mode }) => {
               onChange={(e) => setStockQuantity(e.target.value)}
             />
           </fieldset>
-
           <fieldset>
             <legend>Price</legend>
             <input
@@ -74,18 +70,17 @@ const BuyActionWindow = ({ uid, mode }) => {
           </fieldset>
         </div>
       </div>
-
       <div className="buttons">
         <span>Margin required ₹{(stockQuantity * stockPrice).toFixed(2)}</span>
         <div>
-          <Link
+          <button
             className={`btn ${mode === "BUY" ? "btn-blue" : "btn-red"}`}
             onClick={handleSubmit}>
             {mode === "BUY" ? "Buy" : "Sell"}
-          </Link>
-          <Link to="#" className="btn btn-grey" onClick={closeBuyWindow}>
+          </button>
+          <button className="btn btn-grey" onClick={closeBuyWindow}>
             Cancel
-          </Link>
+          </button>
         </div>
       </div>
     </div>
