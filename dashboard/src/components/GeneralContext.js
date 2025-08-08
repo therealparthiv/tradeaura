@@ -1,41 +1,45 @@
-// frontend/src/components/GeneralContext.js
-
-import React, { useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import axios from "../utils/axiosInstance";
-import BuyActionWindow from "./BuyActionWindow";
 
-const GeneralContext = React.createContext();
+const GeneralContext = createContext();
 
-export const GeneralContextProvider = (props) => {
+export const GeneralContextProvider = ({ children }) => {
   const [watchlist, setWatchlist] = useState([]);
-  const [isBuyWindowOpen, setIsBuyWindowOpen] = useState(false);
-  const [selectedStockUID, setSelectedStockUID] = useState("");
-  const [orderMode, setOrderMode] = useState("BUY");
+  const [buyWindow, setBuyWindow] = useState({
+    isOpen: false,
+    uid: null,
+    mode: null,
+  });
 
   const refreshWatchlist = async () => {
     try {
       const res = await axios.get("/api/watchlist");
-      setWatchlist(res.data);
+      setWatchlist(res.data.stocks || []);
     } catch (err) {
-      console.error("Watchlist fetch error", err);
+      console.error("Failed to refresh watchlist:", err);
+      setWatchlist([]);
     }
-  };
-
-  const openBuyWindow = (uid, mode = "BUY") => {
-    setSelectedStockUID(uid);
-    setOrderMode(mode);
-    setIsBuyWindowOpen(true);
-  };
-
-  const closeBuyWindow = () => {
-    setIsBuyWindowOpen(false);
-    setSelectedStockUID("");
-    setOrderMode("BUY");
   };
 
   useEffect(() => {
     refreshWatchlist();
   }, []);
+
+  const openBuyWindow = (symbol, mode) => {
+    setBuyWindow({
+      isOpen: true,
+      uid: symbol,
+      mode: mode,
+    });
+  };
+
+  const closeBuyWindow = () => {
+    setBuyWindow({
+      isOpen: false,
+      uid: null,
+      mode: null,
+    });
+  };
 
   return (
     <GeneralContext.Provider
@@ -44,11 +48,9 @@ export const GeneralContextProvider = (props) => {
         refreshWatchlist,
         openBuyWindow,
         closeBuyWindow,
+        buyWindow,
       }}>
-      {props.children}
-      {isBuyWindowOpen && (
-        <BuyActionWindow uid={selectedStockUID} mode={orderMode} />
-      )}
+      {children}
     </GeneralContext.Provider>
   );
 };

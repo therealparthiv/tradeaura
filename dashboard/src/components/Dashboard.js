@@ -1,22 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
-
 import Apps from "./Apps";
 import Funds from "./Funds";
 import Holdings from "./Holdings";
-
 import Orders from "./Orders";
 import Positions from "./Positions";
 import Summary from "./Summary";
 import WatchList from "./WatchList";
-import { GeneralContextProvider } from "./GeneralContext";
+import BuyActionWindow from "./BuyActionWindow";
+import GeneralContext from "./GeneralContext";
 
 const Dashboard = () => {
+  const { buyWindow } = useContext(GeneralContext);
+
   return (
     <div className="dashboard-container">
-      <GeneralContextProvider>
-        <WatchList />
-      </GeneralContextProvider>
+      <WatchList />
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Summary />} />
@@ -27,6 +26,9 @@ const Dashboard = () => {
           <Route path="/apps" element={<Apps />} />
         </Routes>
       </div>
+      {buyWindow.isOpen && (
+        <BuyActionWindow uid={buyWindow.uid} mode={buyWindow.mode} />
+      )}
     </div>
   );
 };
