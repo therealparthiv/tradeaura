@@ -1,87 +1,66 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import "./Funds.css";
 
 const Funds = () => {
   return (
-    <>
-      <div className="funds">
-        <p>Instant, zero-cost fund transfers with UPI </p>
-        <Link className="btn btn-green">Add funds</Link>
-        <Link className="btn btn-blue">Withdraw</Link>
+    <div className="funds-container">
+      <div className="funds-header">
+        <h2 className="page-title">Funds</h2>
+        <div className="header-actions">
+          <Link className="btn btn-green">
+            <AddCircleOutlineIcon
+              style={{ fontSize: "1.2rem", marginRight: "8px" }}
+            />
+            Add Funds
+          </Link>
+          <Link className="btn btn-blue">
+            <RemoveCircleOutlineIcon
+              style={{ fontSize: "1.2rem", marginRight: "8px" }}
+            />
+            Withdraw
+          </Link>
+        </div>
       </div>
 
-      <div className="row">
-        <div className="col">
-          <span>
-            <p>Equity</p>
-          </span>
-
-          <div className="table">
-            <div className="data">
-              <p>Available margin</p>
-              <p className="imp colored">4,043.10</p>
+      <div className="funds-grid">
+        <div className="fund-card equity">
+          <h3 className="card-title">Equity</h3>
+          <div className="card-content">
+            <div className="metric">
+              <span>Available Margin</span>
+              <span className="value primary">₹ 4,043.10</span>
             </div>
-            <div className="data">
-              <p>Used margin</p>
-              <p className="imp">3,757.30</p>
+            <div className="metric">
+              <span>Used Margin</span>
+              <span className="value">₹ 3,757.30</span>
             </div>
-            <div className="data">
-              <p>Available cash</p>
-              <p className="imp">4,043.10</p>
+            <div className="metric">
+              <span>Available Cash</span>
+              <span className="value">₹ 4,043.10</span>
             </div>
-            <hr />
-            <div className="data">
-              <p>Opening Balance</p>
-              <p>4,043.10</p>
+            <hr className="divider" />
+            <div className="metric">
+              <span>Opening Balance</span>
+              <span className="value secondary">₹ 4,043.10</span>
             </div>
-            <div className="data">
-              <p>Opening Balance</p>
-              <p>3736.40</p>
-            </div>
-            <div className="data">
-              <p>Payin</p>
-              <p>4064.00</p>
-            </div>
-            <div className="data">
-              <p>SPAN</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Delivery margin</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Exposure</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Options premium</p>
-              <p>0.00</p>
-            </div>
-            <hr />
-            <div className="data">
-              <p>Collateral (Liquid funds)</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Collateral (Equity)</p>
-              <p>0.00</p>
-            </div>
-            <div className="data">
-              <p>Total Collateral</p>
-              <p>0.00</p>
+            <div className="metric">
+              <span>Payin</span>
+              <span className="value secondary">₹ 4,064.00</span>
             </div>
           </div>
         </div>
-
-        <div className="col">
-          <div className="commodity">
-            <p>You don't have a commodity account</p>
+        <div className="fund-card commodity">
+          <h3 className="card-title">Commodity</h3>
+          <div className="card-content centered">
+            <p>You don't have a commodity account.</p>
             <Link className="btn btn-blue">Open Account</Link>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

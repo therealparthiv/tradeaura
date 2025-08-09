@@ -1,126 +1,129 @@
-.orders-page {
-  padding: 2rem;
-  animation: fadeUp 0.4s ease;
-  font-family: "Inter", "Segoe UI", sans-serif;
-  background: linear-gradient(180deg, #f8fafc, #e0f2fe);
-  min-height: 100vh;
+/* --- Modern Orders Page CSS --- */
+
+.orders-container {
+  padding: 1rem;
 }
 
-h2 {
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
-  font-weight: 700;
-  font-size: 1.6rem;
-  color: #1e293b;
-  text-align: center;
 }
 
 .orders-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
-/* Card */
 .order-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 14px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
   padding: 1.25rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(6px);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .order-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-/* Header: stock name + mode */
 .order-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stock-symbol {
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  color: var(--text-primary);
 }
 
-.stock {
-  font-size: 1.05rem;
-  color: #0f172a;
-}
-
-/* Mode tags */
-.mode {
-  font-size: 0.7rem;
-  padding: 5px 10px;
+.mode-tag {
+  font-size: 0.75rem;
+  padding: 4px 12px;
   border-radius: 50px;
   color: white;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
 }
 
-.mode.buy {
-  background-color: #22c55e; /* Green */
+.mode-tag.buy {
+  background-color: var(--color-success);
 }
 
-.mode.sell {
-  background-color: #ef4444; /* Red */
+.mode-tag.sell {
+  background-color: var(--color-danger);
 }
 
-/* Details inside card */
-.order-details p {
-  margin: 6px 0;
+.order-details {
   font-size: 0.9rem;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
-/* Timestamp */
+.order-details p {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.order-details strong {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-family: var(--font-mono);
+}
+
 .timestamp {
   font-size: 0.75rem;
-  color: #64748b;
-  margin-top: 0.75rem;
-}
-
-/* Empty State */
-.empty-orders {
-  text-align: center;
-  margin-top: 4rem;
-  color: #94a3b8;
-  font-size: 1rem;
-}
-
-/* CTA Button */
-.cta {
+  color: var(--text-light);
   margin-top: 1.5rem;
+  text-align: right;
+}
+
+.loading-text {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-state {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--bg-surface);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.empty-state h3 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.cta-button {
   display: inline-block;
-  padding: 0.6rem 1.2rem;
-  background-color: #0077ff;
+  padding: 10px 20px;
+  background-color: var(--color-primary);
   color: white;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-weight: 500;
   text-decoration: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.cta:hover {
-  background-color: #005dd1;
-  transform: translateY(-2px);
-}
-
-/* Animation */
-.fade-in {
-  animation: fadeUp 0.4s ease-in-out;
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.cta-button:hover {
+  opacity: 0.9;
 }

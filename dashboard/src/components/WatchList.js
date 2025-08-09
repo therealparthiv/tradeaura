@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import GeneralContext from "./GeneralContext";
 import Search from "./Search";
 import axios from "../utils/axiosInstance";
+import "./WatchList.css";
 import {
   KeyboardArrowDown,
   KeyboardArrowUp,

@@ -1,25 +1,32 @@
 import React from "react";
-
 import Menu from "./Menu";
+import "./TopBar.css";
 
 const TopBar = () => {
   return (
-    <div className="topbar-container">
-      <div className="indices-container">
-        <div className="nifty">
-          <p className="index">NIFTY 50</p>
-          <p className="index-points">{100.2} </p>
-          <p className="percent"> </p>
+    <header className="topbar-container">
+      <div className="topbar-brand">
+        <img src="/logo.jpeg" alt="logo" className="logo" />
+        <span className="brand-name">TradeAura</span>
+      </div>
+
+      <div className="topbar-indices">
+        <div className="index-item">
+          <p className="index-name">NIFTY 50</p>
+          <p className="index-points loss">17,546.15</p>
+          <p className="index-change loss">(-0.25%)</p>
         </div>
-        <div className="sensex">
-          <p className="index">SENSEX</p>
-          <p className="index-points">{100.2}</p>
-          <p className="percent"></p>
+        <div className="index-item">
+          <p className="index-name">SENSEX</p>
+          <p className="index-points profit">58,833.87</p>
+          <p className="index-change profit">(+0.50%)</p>
         </div>
       </div>
 
-      <Menu />
-    </div>
+      <div className="topbar-menu">
+        <Menu />
+      </div>
+    </header>
   );
 };
 

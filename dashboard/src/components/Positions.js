@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../utils/axiosInstance";
-import { VerticalGraph } from "./VerticalGraph";
 import "./Positions.css";
+
 const Positions = () => {
   const [positions, setPositions] = useState([]);
   const [livePrices, setLivePrices] = useState({});
@@ -15,27 +15,17 @@ const Positions = () => {
 
         const prices = {};
         for (let pos of res.data) {
-          const originalName = pos.name;
-          let symbol = originalName;
-
-          if (!symbol.endsWith(".NS") && !symbol.endsWith(".BO")) {
-            symbol += ".NS"; // default to NSE
-          }
-
           try {
-            const priceRes = await axios.get(`/api/price/${symbol}`);
-            const fetchedPrice = parseFloat(priceRes.data.price);
-            prices[originalName] = isNaN(fetchedPrice) ? 0 : fetchedPrice;
+            const priceRes = await axios.get(`/api/price/${pos.name}`);
+            prices[pos.name] = parseFloat(priceRes.data.price) || 0;
           } catch (err) {
-            console.warn(`Price fetch failed for ${symbol}`);
-            prices[originalName] = 0;
+            prices[pos.name] = 0;
           }
         }
-
         setLivePrices(prices);
-        setLoading(false);
       } catch (err) {
         console.error("Error loading positions", err);
+      } finally {
         setLoading(false);
       }
     };
@@ -43,86 +33,92 @@ const Positions = () => {
     fetchPositions();
   }, []);
 
-  const getLTP = (symbol) => {
-    const price = livePrices[symbol];
-    return typeof price === "number" ? price : 0;
-  };
-
-  const getExchange = (name) => {
-    if (name.endsWith(".BO")) return "BSE";
-    return "NSE";
-  };
-
+  const getLTP = (symbol) => livePrices[symbol] || 0;
   const stripExtension = (name) => name.replace(/\.NS|\.BO/, "");
 
-  const labels = positions.map((s) => s.name);
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: "LTP",
-        data: positions.map((s) => getLTP(s.name)),
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
-      },
-    ],
-  };
+  if (loading) {
+    return <p className="loading-text">Loading positions...</p>;
+  }
 
-  if (loading) return <p className="loading">Loading positions...</p>;
+  const totalPNL = positions.reduce((acc, pos) => {
+    const ltp = getLTP(pos.name);
+    const invested = pos.avg * Math.abs(pos.qty);
+    const curValue = ltp * Math.abs(pos.qty);
+    return acc + (curValue - invested);
+  }, 0);
 
   return (
-    <>
-      <h3 className="title">Open Positions ({positions.length})</h3>
+    <div className="positions-container">
+      <div className="positions-header">
+        <h2 className="page-title">Positions ({positions.length})</h2>
+        <div className="pnl-summary">
+          <span className="pnl-label">Total P&L</span>
+          <span className={`pnl-value ${totalPNL >= 0 ? "profit" : "loss"}`}>
+            {totalPNL >= 0
+              ? `+₹${totalPNL.toFixed(2)}`
+              : `-₹${Math.abs(totalPNL).toFixed(2)}`}
+          </span>
+        </div>
+      </div>
 
-      <div className="order-table">
-        <table>
+      <div className="table-wrapper">
+        <table className="positions-table">
           <thead>
             <tr>
               <th>Instrument</th>
               <th>Side</th>
-              <th>Qty</th>
-              <th>Avg. cost</th>
+              <th>Qty.</th>
+              <th>Avg. Cost</th>
               <th>LTP</th>
-              <th>Cur. val</th>
               <th>P&L</th>
             </tr>
           </thead>
           <tbody>
-            {positions.map((pos, index) => {
-              const ltp = getLTP(pos.name);
-              const curValue = ltp * pos.qty;
-              const invested = pos.avg * pos.qty;
-              const pnl = curValue - invested;
-              const isProfit = pnl >= 0;
+            {positions.length > 0 ? (
+              positions.map((pos, index) => {
+                const ltp = getLTP(pos.name);
+                const invested = pos.avg * Math.abs(pos.qty);
+                const curValue = ltp * Math.abs(pos.qty);
+                const pnl = curValue - invested;
+                const isProfit = pnl >= 0;
 
-              return (
-                <tr key={index}>
-                  <td>
-                    <div className="stock-info">
-                      <span className="symbol">{stripExtension(pos.name)}</span>
-                      <span className="exchange-tag">
-                        {getExchange(pos.name)}
+                return (
+                  <tr key={index}>
+                    <td>
+                      <div className="stock-info">
+                        <span className="symbol">
+                          {stripExtension(pos.name)}
+                        </span>
+                        <span className="exchange-tag">
+                          {pos.name.endsWith(".NS") ? "NSE" : "BSE"}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`side-tag ${pos.side.toLowerCase()}`}>
+                        {pos.side}
                       </span>
-                    </div>
-                  </td>
-                  <td>{pos.side.toUpperCase()}</td>
-                  <td>{pos.qty}</td>
-                  <td>₹{pos.avg.toFixed(2)}</td>
-                  <td>₹{ltp.toFixed(2)}</td>
-                  <td>₹{curValue.toFixed(2)}</td>
-                  <td className={isProfit ? "profit" : "loss"}>
-                    {pnl < 0
-                      ? `-₹${Math.abs(pnl).toFixed(2)}`
-                      : `₹${pnl.toFixed(2)}`}
-                  </td>
-                </tr>
-              );
-            })}
+                    </td>
+                    <td className="quantity">{pos.qty}</td>
+                    <td>₹{pos.avg.toFixed(2)}</td>
+                    <td>₹{ltp.toFixed(2)}</td>
+                    <td className={isProfit ? "profit" : "loss"}>
+                      {pnl.toFixed(2)}
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="6" className="no-positions">
+                  You have no open positions.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
-
-      <VerticalGraph data={data} />
-    </>
+    </div>
   );
 };
 

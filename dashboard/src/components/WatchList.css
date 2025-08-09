@@ -1,0 +1,125 @@
+/* --- Modern Watchlist Styling --- */
+
+.watchlist-container {
+  flex-basis: 32%;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.list li {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 12px 1rem;
+  position: relative;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 500;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+/* Stock Symbol */
+.item > p {
+  margin: 0;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.item-info {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  font-family: "Roboto Mono", monospace; /* Monospaced font for numbers */
+  text-align: right;
+}
+
+.item-info > span:first-child {
+  width: 70px; /* Fixed width for alignment */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.item-info > span:last-child {
+  width: 80px; /* Fixed width for alignment */
+}
+
+/* Hover Actions (Buy/Sell buttons) */
+.actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  display: none; /* Hidden by default */
+  background: linear-gradient(to left, white 70%, transparent 100%);
+  padding-right: 1rem;
+}
+
+.list li:hover .actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions button {
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s ease-out;
+}
+
+.actions button:hover {
+  transform: scale(1.05);
+}
+
+.buy {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.sell {
+  background-color: #f43f5e;
+  color: #fff;
+}
+
+.action {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.action .MuiSvgIcon-root {
+  font-size: 1.2rem;
+}
+
+/* Profit and Loss Colors */
+.profit {
+  color: #16a34a !important; /* Tailwind green-600 */
+}
+
+.loss {
+  color: #dc2626 !important; /* Tailwind red-600 */
+}

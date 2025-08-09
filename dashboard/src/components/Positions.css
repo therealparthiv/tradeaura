@@ -1,14 +1,118 @@
+.positions-container {
+  padding: 1rem;
+}
+
+.positions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pnl-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.pnl-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.pnl-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.table-wrapper {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.positions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.positions-table th {
+  background-color: var(--bg-muted);
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.positions-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+.positions-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.positions-table tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.03);
+}
+
+.positions-table td:not(:first-child),
+.positions-table th:not(:first-child) {
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+.stock-info {
+  display: flex;
+  flex-direction: column;
+}
+
 .symbol {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .exchange-tag {
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  background-color: #e0f2fe;
-  color: #0284c7;
-  border-radius: 4px;
-  margin-left: 6px;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.side-tag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  color: #fff;
+}
+
+.side-tag.long {
+  background-color: var(--color-primary);
+}
+
+.side-tag.short {
+  background-color: #f59e0b; /* Amber/Orange */
+}
+
+.no-positions {
+  text-align: center !important;
+  padding: 3rem 1rem !important;
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
 }

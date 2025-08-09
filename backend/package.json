@@ -24,6 +24,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0",
-    "ticker-symbol-search": "^1.0.1"
+    "ticker-symbol-search": "^1.0.1",
+    "yahoo-finance2": "^2.13.3"
   }
 }

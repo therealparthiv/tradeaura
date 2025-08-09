@@ -149,6 +149,64 @@ app.get("/api/positions", authMiddleware, async (req, res) => {
   }
 });
 
+// Add this new route to your backend/index.js, preferably before mongoose.connect()
+
+// ✅ DYNAMIC PORTFOLIO HISTORY from actual orders
+app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
+  try {
+    const orders = await OrderModel.find({ userId: req.user._id }).sort({
+      createdAt: "asc",
+    });
+
+    if (orders.length === 0) {
+      return res.json([]);
+    }
+
+    // Use a Map to track the quantity and average cost of each stock
+    const portfolio = new Map();
+    let cumulativeValue = 0;
+    const history = [];
+
+    // Process each order chronologically
+    for (const order of orders) {
+      const stock = portfolio.get(order.name) || { qty: 0, totalCost: 0 };
+
+      if (order.mode === "BUY") {
+        stock.qty += order.qty;
+        stock.totalCost += order.qty * order.price;
+      } else {
+        // SELL
+        const avgCost = stock.qty > 0 ? stock.totalCost / stock.qty : 0;
+        stock.totalCost -= order.qty * avgCost; // Reduce cost basis on sale
+        stock.qty -= order.qty;
+      }
+
+      portfolio.set(order.name, stock);
+
+      // Recalculate total portfolio value after each transaction
+      cumulativeValue = 0;
+      for (const [name, data] of portfolio.entries()) {
+        // For simplicity, we use the order price as the market price on that day
+        // A real-world app would fetch historical EOD prices here
+        cumulativeValue += data.qty * order.price;
+      }
+
+      history.push({
+        time: new Date(order.createdAt).toLocaleDateString("en-IN", {
+          month: "short",
+          day: "numeric",
+        }),
+        value: Math.round(cumulativeValue),
+      });
+    }
+
+    res.json(history);
+  } catch (err) {
+    console.error("Portfolio history error:", err.message);
+    res.status(500).json({ message: "Failed to generate portfolio history" });
+  }
+});
+
 // ✅ Start server after DB connects
 mongoose
   .connect(uri)

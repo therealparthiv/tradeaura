@@ -1,8 +1,7 @@
-// src/components/Search.js
 import React, { useState, useContext, useRef, useEffect } from "react";
-import flask from "../utils/axiosFlask"; // Flask backend
-import axios from "../utils/axiosInstance"; // Node backend
+import axios from "../utils/axiosInstance";
 import GeneralContext from "./GeneralContext";
+import SearchIcon from "@mui/icons-material/Search"; // 1. Import the icon
 import "./Search.css";
 
 const Search = () => {
@@ -11,7 +10,7 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const { refreshWatchlist } = useContext(GeneralContext);
   const timeoutRef = useRef(null);
-  const wrapperRef = useRef();
+  const wrapperRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -24,41 +23,28 @@ const Search = () => {
   }, []);
 
   const handleChange = (e) => {
-    const input = e.target.value.toUpperCase();
+    const input = e.target.value;
     setQuery(input);
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    if (input.length < 2) {
+    if (input.length < 1) {
       setResults([]);
+      setLoading(false);
       return;
     }
 
+    setLoading(true);
     timeoutRef.current = setTimeout(async () => {
-      setLoading(true);
-      const exchanges = [".NS", ".BO"];
-      const candidates = exchanges.map((suffix) => `${input}${suffix}`);
-      const temp = [];
-
-      await Promise.all(
-        candidates.map(async (symbol) => {
-          try {
-            const res = await flask.get(`/price/${symbol}`);
-            if (res.data && res.data.price) {
-              temp.push({
-                symbol: res.data.symbol,
-                price: res.data.price,
-                exchange: symbol.endsWith(".NS") ? "NSE" : "BSE",
-              });
-            }
-          } catch {
-            // ignore errors
-          }
-        })
-      );
-
-      setResults(temp);
-      setLoading(false);
+      try {
+        const res = await axios.get(`/api/search-stocks?q=${input}`);
+        setResults(res.data);
+      } catch (err) {
+        console.error("Failed to search for stocks:", err);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
     }, 300);
   };
 
@@ -69,30 +55,37 @@ const Search = () => {
       setQuery("");
       setResults([]);
     } catch (err) {
+      alert(err.response?.data?.error || `Could not add ${symbol}.`);
       console.error("Error adding stock:", err.message);
     }
   };
 
   return (
     <div className="search-wrapper" ref={wrapperRef}>
-      <input
-        type="text"
-        value={query}
-        onChange={handleChange}
-        placeholder="Search eg: INFY, SBIN"
-        className="search-input"
-      />
-      {loading && <div className="loading">Searching...</div>}
+      {/* 2. Add a container and the icon */}
+      <div className="search-input-container">
+        <SearchIcon className="search-icon" />
+        <input
+          type="text"
+          value={query}
+          onChange={handleChange}
+          placeholder="Search e.g., Infosys, ITC"
+          className="search-input"
+          autoComplete="off"
+        />
+      </div>
+      {loading && <div className="loading-text">Searching...</div>}
       {results.length > 0 && (
         <ul className="search-results">
-          {results.map((stock, idx) => (
-            <li key={idx} className="search-item">
-              <span>
-                <strong>{stock.symbol}</strong> — ₹{stock.price} (
-                {stock.exchange})
-              </span>
+          {results.map((stock) => (
+            <li key={stock.symbol} className="search-item">
+              <div className="stock-info">
+                <strong>{stock.symbol}</strong>
+                <span>{stock.name}</span>
+              </div>
               <button
                 className="add-btn"
+                title={`Add ${stock.symbol} to watchlist`}
                 onClick={() => handleAdd(stock.symbol)}>
                 +
               </button>

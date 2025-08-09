@@ -1,129 +1,125 @@
-/* Summary Container Styling */
-.username h6 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin-bottom: 1rem;
+.summary-page {
+  animation: fadeIn 0.3s ease-out;
 }
 
-.divider {
-  border: none;
-  height: 1px;
-  background-color: #e2e8f0;
-  margin: 1.5rem 0;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Section Card Styling */
-.section {
-  background: linear-gradient(to right, #f9fafb, #f1f5f9);
+.summary-header {
+  margin-bottom: 2rem;
+}
+
+.summary-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-header p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.summary-main-card {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
 }
 
-/* Section Titles */
-.section > span > p {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 1.2rem;
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
+.performance-section,
+.overview-section {
+  display: flex;
+  flex-direction: column;
 }
 
-/* Inner Summary Boxes (Margin, P&L, etc.) */
-.data {
+.overview-section {
+  border-left: 1px solid var(--border-color);
+  padding-left: 1.5rem;
+}
+
+/* --- THE CRITICAL FIX FOR THE GRAPH --- */
+.chart-container {
+  position: relative;
+  height: 300px; /* This gives the chart canvas a space to render in */
+  width: 100%;
+}
+
+.loading-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid var(--color-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.overview-metric {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
 }
 
-/* Left-side big number */
-.data .first {
-  flex: 1;
+.metric-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
-.data .first h3 {
-  font-size: 2.1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.data .first small {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-left: 6px;
-  color: inherit;
-}
-
-/* Right-side smaller details */
-.data .second {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.data .second p {
+.metric-value {
   font-size: 1.1rem;
-  display: flex;
-  justify-content: space-between;
-  color: #334155;
+  font-weight: 500;
+  font-family: var(--font-mono);
 }
 
-/* Profit / Loss Colors */
-.profit {
-  color: #10b981;
+.market-watch-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
 }
 
-.loss {
-  color: #ef4444;
-}
-
-/* Live Price Grid Styling */
 .price-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* Responsive improvements */
-@media screen and (max-width: 768px) {
-  .data {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .data .first h3 {
-    font-size: 1.8rem;
-  }
-
-  .data .second p {
-    font-size: 1rem;
-  }
-}
-/* Profit and Loss Coloring */
-.profit {
-  color: #16a34a !important; /* Tailwind green-600 */
-}
-
-.loss {
-  color: #dc2626 !important; /* Tailwind red-600 */
-}
-
-.data .first h3 {
-  font-size: 2.1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
-}
-
-.data .first h3 small {
-  font-size: 1rem;
-  margin-left: 8px;
-  opacity: 0.85;
 }
