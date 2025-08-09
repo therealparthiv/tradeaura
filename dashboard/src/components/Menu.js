@@ -20,7 +20,6 @@ const Menu = () => {
   };
 
   const handleLogout = () => {
-    // Implement your logout logic here
     alert("Logout clicked!");
   };
 

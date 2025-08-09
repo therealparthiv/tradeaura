@@ -11,17 +11,21 @@ export const GeneralContextProvider = ({ children }) => {
     mode: null,
   });
 
+  const [chartWindow, setChartWindow] = useState({
+    isOpen: false,
+    symbol: null,
+  });
+
   const refreshWatchlist = async () => {
     try {
       const res = await axios.get("/api/watchlist");
-      // The backend sends an object like { stocks: [...] }, so we access the .stocks property
       if (res.data && Array.isArray(res.data.stocks)) {
         setWatchlist(res.data.stocks);
       } else {
         setWatchlist([]);
       }
     } catch (err) {
-      console.error("Error fetching watchlist from backend:", err);
+      console.error("Error fetching watchlist:", err);
       setWatchlist([]);
     }
   };
@@ -31,19 +35,17 @@ export const GeneralContextProvider = ({ children }) => {
   }, []);
 
   const openBuyWindow = (symbol, mode) => {
-    setBuyWindow({
-      isOpen: true,
-      uid: symbol,
-      mode: mode,
-    });
+    setBuyWindow({ isOpen: true, uid: symbol, mode: mode });
+  };
+  const closeBuyWindow = () => {
+    setBuyWindow({ isOpen: false, uid: null, mode: null });
   };
 
-  const closeBuyWindow = () => {
-    setBuyWindow({
-      isOpen: false,
-      uid: null,
-      mode: null,
-    });
+  const openChartWindow = (symbol) => {
+    setChartWindow({ isOpen: true, symbol: symbol });
+  };
+  const closeChartWindow = () => {
+    setChartWindow({ isOpen: false, symbol: null });
   };
 
   return (
@@ -51,9 +53,12 @@ export const GeneralContextProvider = ({ children }) => {
       value={{
         watchlist,
         refreshWatchlist,
+        buyWindow,
         openBuyWindow,
         closeBuyWindow,
-        buyWindow,
+        chartWindow,
+        openChartWindow,
+        closeChartWindow,
       }}>
       {children}
     </GeneralContext.Provider>

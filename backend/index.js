@@ -6,43 +6,43 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+// Import all necessary models and routes
 const { OrderModel } = require("./model/OrderModel");
 const authRoutes = require("./routes/authRoutes");
 const marketRoutes = require("./routes/marketRoutes");
-const watchlistRoutes = require("./routes/watchlistRoutes"); // 1. REQUIRE THE WATCHLIST ROUTES
+const watchlistRoutes = require("./routes/watchlistRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
 
-// ✅ Allow cross-origin frontend/dashboard requests with cookies
+// --- Middleware Setup ---
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   })
 );
-
-// ✅ Middleware
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// ✅ Routes
+// --- API Routes ---
 app.use("/api/auth", authRoutes);
 app.use("/api", marketRoutes);
-app.use("/api/watchlist", watchlistRoutes); // 2. USE THE WATCHLIST ROUTES
+app.use("/api/watchlist", watchlistRoutes);
 
-// ✅ Place a new order (per user)
+// --- Core Trading Endpoints ---
+
 app.post("/newOrder", authMiddleware, async (req, res) => {
-  const { name, qty, price, mode } = req.body;
+  const { name, qty, price, mode, product, orderType, triggerPrice } = req.body;
   const userId = req.user._id;
-
-  if (!name || !qty || !price || !mode) {
-    return res.status(400).json({ message: "Missing order fields" });
+  if (!name || !qty || !price || !mode || !product || !orderType) {
+    return res
+      .status(400)
+      .json({ message: "Incomplete order details provided" });
   }
-
   try {
     const newOrder = new OrderModel({
       userId,
@@ -50,17 +50,17 @@ app.post("/newOrder", authMiddleware, async (req, res) => {
       qty,
       price,
       mode,
-      createdAt: new Date(),
+      product,
+      orderType,
+      triggerPrice,
     });
     await newOrder.save();
     return res.status(201).json({ message: "Order placed successfully" });
   } catch (err) {
-    console.error("Order Error:", err.message);
-    return res.status(500).json({ message: "Order failed" });
+    return res.status(500).json({ message: "Order failed to execute" });
   }
 });
 
-// ✅ Fetch orders for logged-in user
 app.get("/api/orders", authMiddleware, async (req, res) => {
   try {
     const orders = await OrderModel.find({ userId: req.user._id }).sort({
@@ -72,86 +72,69 @@ app.get("/api/orders", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Holdings = sum of BUY & SELL for logged-in user
 app.get("/api/holdings", authMiddleware, async (req, res) => {
   const userId = req.user._id;
-
   try {
-    const orders = await OrderModel.find({ userId });
-
+    const orders = await OrderModel.find({
+      userId,
+      $or: [{ product: "CNC" }, { product: { $exists: false } }],
+    });
     const holdingsMap = {};
-
     orders.forEach(({ name, qty, price, mode }) => {
-      if (!holdingsMap[name]) {
-        holdingsMap[name] = { qty: 0, totalCost: 0 };
-      }
-
+      if (!holdingsMap[name]) holdingsMap[name] = { qty: 0, totalCost: 0 };
       if (mode === "BUY") {
         holdingsMap[name].qty += qty;
         holdingsMap[name].totalCost += qty * price;
       } else if (mode === "SELL") {
+        const avgCost =
+          holdingsMap[name].qty > 0
+            ? holdingsMap[name].totalCost / holdingsMap[name].qty
+            : 0;
+        holdingsMap[name].totalCost -= qty * avgCost;
         holdingsMap[name].qty -= qty;
-        holdingsMap[name].totalCost -= qty * price;
       }
     });
-
     const holdings = Object.entries(holdingsMap)
-      .filter(([_, data]) => data.qty > 0)
+      .filter(([_, data]) => data.qty > 1e-9)
       .map(([name, data]) => ({
         name,
         qty: data.qty,
-        avg: data.totalCost / data.qty,
+        avg: data.qty > 0 ? data.totalCost / data.qty : 0,
       }));
-
     res.json(holdings);
   } catch (err) {
-    console.error("Holdings error:", err.message);
     res.status(500).json({ message: "Failed to calculate holdings" });
   }
 });
 
-// ✅ Positions = active buy/sell positions (qty !== 0)
 app.get("/api/positions", authMiddleware, async (req, res) => {
   const userId = req.user._id;
-
   try {
-    const orders = await OrderModel.find({ userId });
-
+    const orders = await OrderModel.find({ userId, product: "MIS" });
     const positionMap = {};
-
     orders.forEach(({ name, qty, price, mode }) => {
-      if (!positionMap[name]) {
-        positionMap[name] = { qty: 0, totalCost: 0 };
-      }
-
-      if (mode === "BUY") {
-        positionMap[name].qty += qty;
-        positionMap[name].totalCost += qty * price;
-      } else if (mode === "SELL") {
-        positionMap[name].qty -= qty;
-        positionMap[name].totalCost -= qty * price;
-      }
+      if (!positionMap[name])
+        positionMap[name] = { qty: 0, totalValue: 0, trades: 0 };
+      const multiplier = mode === "BUY" ? 1 : -1;
+      positionMap[name].qty += qty * multiplier;
+      positionMap[name].totalValue += qty * price * multiplier;
+      positionMap[name].trades++;
     });
-
     const positions = Object.entries(positionMap)
-      .filter(([_, data]) => data.qty !== 0)
+      .filter(([_, data]) => Math.abs(data.qty) > 1e-9)
       .map(([name, data]) => ({
         name,
         qty: data.qty,
-        avg: data.totalCost / data.qty,
+        avg: data.trades > 0 ? Math.abs(data.totalValue / data.qty) : 0,
         side: data.qty > 0 ? "Long" : "Short",
       }));
-
     res.json(positions);
   } catch (err) {
-    console.error("Positions error:", err.message);
     res.status(500).json({ message: "Failed to fetch positions" });
   }
 });
 
-// Add this new route to your backend/index.js, preferably before mongoose.connect()
-
-// ✅ DYNAMIC PORTFOLIO HISTORY from actual orders
+// --- ✅ ACCURATE Portfolio History Endpoint ---
 app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
   try {
     const orders = await OrderModel.find({ userId: req.user._id }).sort({
@@ -159,36 +142,31 @@ app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
     });
 
     if (orders.length === 0) {
-      return res.json([]);
+      return res.json([{ time: "Start", value: 0 }]);
     }
 
-    // Use a Map to track the quantity and average cost of each stock
     const portfolio = new Map();
-    let cumulativeValue = 0;
-    const history = [];
+    const history = [{ time: "Start", value: 0 }];
 
-    // Process each order chronologically
     for (const order of orders) {
-      const stock = portfolio.get(order.name) || { qty: 0, totalCost: 0 };
+      const stock = portfolio.get(order.name) || { qty: 0 };
 
       if (order.mode === "BUY") {
         stock.qty += order.qty;
-        stock.totalCost += order.qty * order.price;
       } else {
-        // SELL
-        const avgCost = stock.qty > 0 ? stock.totalCost / stock.qty : 0;
-        stock.totalCost -= order.qty * avgCost; // Reduce cost basis on sale
         stock.qty -= order.qty;
       }
-
       portfolio.set(order.name, stock);
 
-      // Recalculate total portfolio value after each transaction
-      cumulativeValue = 0;
-      for (const [name, data] of portfolio.entries()) {
-        // For simplicity, we use the order price as the market price on that day
-        // A real-world app would fetch historical EOD prices here
-        cumulativeValue += data.qty * order.price;
+      let cumulativeValue = 0;
+      for (const [symbol, data] of portfolio.entries()) {
+        const latestOrderForSymbol = orders
+          .filter((o) => o.name === symbol && o.createdAt <= order.createdAt)
+          .pop();
+        const lastKnownPrice = latestOrderForSymbol
+          ? latestOrderForSymbol.price
+          : 0;
+        cumulativeValue += data.qty * lastKnownPrice;
       }
 
       history.push({
@@ -202,12 +180,12 @@ app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
 
     res.json(history);
   } catch (err) {
-    console.error("Portfolio history error:", err.message);
+    console.error("Accurate Portfolio History Error:", err.message);
     res.status(500).json({ message: "Failed to generate portfolio history" });
   }
 });
 
-// ✅ Start server after DB connects
+// --- Database Connection & Server Start ---
 mongoose
   .connect(uri)
   .then(() => {

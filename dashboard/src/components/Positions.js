@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "../utils/axiosInstance";
-import "./Positions.css";
+import "./Positions.css"; // Using the new, improved styles
 
 const Positions = () => {
   const [positions, setPositions] = useState([]);
@@ -19,6 +19,7 @@ const Positions = () => {
             const priceRes = await axios.get(`/api/price/${pos.name}`);
             prices[pos.name] = parseFloat(priceRes.data.price) || 0;
           } catch (err) {
+            console.warn(`Price fetch failed for ${pos.name}`);
             prices[pos.name] = 0;
           }
         }
@@ -34,6 +35,7 @@ const Positions = () => {
   }, []);
 
   const getLTP = (symbol) => livePrices[symbol] || 0;
+  const getExchange = (name) => (name.endsWith(".BO") ? "BSE" : "NSE");
   const stripExtension = (name) => name.replace(/\.NS|\.BO/, "");
 
   if (loading) {
@@ -66,6 +68,7 @@ const Positions = () => {
           <thead>
             <tr>
               <th>Instrument</th>
+              <th>Product</th>
               <th>Side</th>
               <th>Qty.</th>
               <th>Avg. Cost</th>
@@ -90,9 +93,12 @@ const Positions = () => {
                           {stripExtension(pos.name)}
                         </span>
                         <span className="exchange-tag">
-                          {pos.name.endsWith(".NS") ? "NSE" : "BSE"}
+                          {getExchange(pos.name)}
                         </span>
                       </div>
+                    </td>
+                    <td>
+                      <span className="product-tag">MIS</span>
                     </td>
                     <td>
                       <span className={`side-tag ${pos.side.toLowerCase()}`}>
@@ -110,8 +116,8 @@ const Positions = () => {
               })
             ) : (
               <tr>
-                <td colSpan="6" className="no-positions">
-                  You have no open positions.
+                <td colSpan="7" className="no-positions">
+                  You have no open intraday positions.
                 </td>
               </tr>
             )}

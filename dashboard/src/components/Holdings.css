@@ -1,143 +1,190 @@
-/* Global container */
+/* --- Professional Holdings Page CSS --- */
 .holdings-container {
-  max-width: 1100px;
-  margin: 40px auto;
-  padding: 2rem;
-  font-family: "Inter", "Segoe UI", sans-serif;
-  background: linear-gradient(180deg, #f8fafc, #f1f5f9);
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.07);
-}
-
-/* Title */
-.title {
-  font-size: 1.9rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1e293b;
-  text-align: center;
-}
-
-/* Holdings Table Wrapper */
-.holdings-table {
-  overflow-x: auto;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
   padding: 1rem;
-  backdrop-filter: blur(8px);
 }
 
-/* Table Base */
-.holdings-table table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-  font-size: 0.95rem;
-}
-
-/* Table Headers */
-.holdings-table th {
-  text-align: left;
-  padding: 12px 16px;
+.page-title {
+  font-size: 1.5rem;
   font-weight: 600;
-  color: #475569;
-  background-color: #f1f5f9;
-  border-radius: 10px 10px 0 0;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
 }
 
-/* Table Body Cells */
+.table-wrapper {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem; /* Space between table and summary */
+}
+
+.holdings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.holdings-table th {
+  background-color: var(--bg-muted);
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .holdings-table td {
   padding: 14px 16px;
-  background: #ffffff;
-  border-radius: 10px;
-  vertical-align: middle;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-  transition: background 0.3s ease;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  white-space: nowrap;
 }
 
-/* Row hover */
-.holdings-table tr:hover td {
-  background-color: #f9fafb;
+.holdings-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-/* Stock symbol & tags layout */
+.holdings-table tbody tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+.holdings-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.holdings-table th:not(:first-child),
+.holdings-table td:not(:first-child) {
+  text-align: right;
+}
+
+.holdings-table td:first-child {
+  font-family: var(--font-primary);
+}
+
 .stock-info {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
 .symbol {
   font-weight: 600;
-  font-size: 1rem;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
-/* Exchange / CNC tags */
-.exchange-tag,
-.cnc-tag {
-  font-size: 0.7rem;
-  padding: 3px 8px;
-  border-radius: 50px;
-  background-color: #e0f2fe;
-  color: #0284c7;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+.exchange-tag {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
 
-.cnc-tag {
-  background-color: #ede9fe;
-  color: #7c3aed;
-}
-
-/* Profit / Loss Styles */
-.profit {
-  color: #16a34a; /* green */
-  font-weight: 600;
-}
-
-.loss {
-  color: #dc2626; /* red */
-  font-weight: 600;
-}
-
-/* Summary box below table */
-.summary {
+.pnl-cell {
   display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
-  text-align: center;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-.summary div {
-  flex: 1;
+.trade-buttons {
+  display: flex;
+  gap: 0.5rem;
+  animation: fadeInButtons 0.2s;
 }
 
-.summary h4 {
-  margin: 0;
-  font-size: 1.3rem;
+@keyframes fadeInButtons {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.trade-buttons button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.trade-buttons button:hover {
+  transform: scale(1.1);
+}
+
+.buy {
+  background-color: var(--color-primary);
+}
+
+.sell {
+  background-color: var(--color-danger);
+}
+
+.no-holdings {
+  text-align: center !important;
+  padding: 3rem 1rem !important;
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
+}
+
+/* --- Summary Section Below Table --- */
+.holdings-summary-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.summary-card {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 1.25rem;
+  text-align: left;
+}
+
+.summary-card h4 {
+  font-size: 1.75rem;
+  font-family: var(--font-mono);
   font-weight: 600;
-  color: #0f172a;
+  margin-bottom: 0.25rem;
 }
 
-.summary p {
-  margin: 4px 0 0;
-  font-size: 0.85rem;
-  color: #64748b;
+.summary-card p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 500;
 }
 
-/* Loader text */
-.loading {
-  text-align: center;
-  color: #64748b;
+.pie-chart-card {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  height: 100%;
+}
+
+.section-title {
   font-size: 1.1rem;
-  margin-top: 2rem;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.chart-canvas-container {
+  position: relative;
+  height: 260px; /* Adjusted height for better fit */
 }

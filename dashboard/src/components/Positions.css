@@ -1,3 +1,5 @@
+/* --- Professional Positions Page CSS --- */
+
 .positions-container {
   padding: 1rem;
 }
@@ -69,13 +71,20 @@
 }
 
 .positions-table tbody tr:hover {
-  background-color: rgba(59, 130, 246, 0.03);
+  background-color: rgba(59, 130, 246, 0.03); /* Subtle blue hover */
 }
 
+/* Specific column styling */
 .positions-table td:not(:first-child),
 .positions-table th:not(:first-child) {
   text-align: right;
   font-family: var(--font-mono);
+}
+
+.positions-table td:first-child,
+.positions-table th:first-child {
+  font-family: var(--font-primary);
+  text-align: left;
 }
 
 .stock-info {
@@ -93,6 +102,16 @@
   color: var(--text-secondary);
 }
 
+.product-tag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #a16207; /* Yellow 700 */
+  background-color: #fefce8; /* Yellow 50 */
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
 .side-tag {
   font-size: 0.8rem;
   font-weight: 600;
@@ -100,6 +119,8 @@
   border-radius: 6px;
   display: inline-block;
   color: #fff;
+  text-align: center;
+  min-width: 50px;
 }
 
 .side-tag.long {
@@ -115,4 +136,10 @@
   padding: 3rem 1rem !important;
   color: var(--text-secondary);
   font-family: var(--font-primary);
+}
+
+.loading-text {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
 }

@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import GeneralContext from "./GeneralContext";
 import Search from "./Search";
 import axios from "../utils/axiosInstance";
-import "./WatchList.css";
 import {
   KeyboardArrowDown,
   KeyboardArrowUp,
@@ -11,6 +10,7 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import { Tooltip, Grow } from "@mui/material";
+import "./WatchList.css";
 
 const WatchList = () => {
   const { watchlist, refreshWatchlist } = useContext(GeneralContext);
@@ -45,7 +45,7 @@ export default WatchList;
 
 const WatchListItem = ({ stock, onRemove }) => {
   const [showActions, setShowActions] = useState(false);
-  const { openBuyWindow } = useContext(GeneralContext);
+  const { openBuyWindow, openChartWindow } = useContext(GeneralContext);
   const [liveData, setLiveData] = useState(null);
   const [error, setError] = useState(null);
 
@@ -57,16 +57,13 @@ const WatchListItem = ({ stock, onRemove }) => {
         setLiveData(res.data);
       } catch (err) {
         setError("N/A");
-        console.error(`Failed to fetch price for ${stock.symbol}`, err);
       }
     };
-
     fetchPrice();
     const interval = setInterval(fetchPrice, 30000);
     return () => clearInterval(interval);
   }, [stock.symbol]);
 
-  // Determine price and change from live data
   const price = liveData ? liveData.price : 0.0;
   const isDown = liveData ? liveData.change < 0 : false;
   const pChange = liveData ? Math.abs(liveData.pChange || 0) : 0;
@@ -74,8 +71,7 @@ const WatchListItem = ({ stock, onRemove }) => {
   return (
     <li
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
-      className="watchlist-item">
+      onMouseLeave={() => setShowActions(false)}>
       <div className="item">
         <p className={isDown ? "loss" : "profit"}>{stock.symbol}</p>
         <div className="item-info">
@@ -97,53 +93,30 @@ const WatchListItem = ({ stock, onRemove }) => {
 
       {showActions && (
         <span className="actions">
-          <Tooltip
-            title="Buy (B)"
-            placement="top"
-            arrow
-            TransitionComponent={Grow}>
+          <Tooltip title="Buy (B)" placement="top" arrow>
             <button
               className="buy"
               onClick={() => openBuyWindow(stock.symbol, "BUY")}>
               Buy
             </button>
           </Tooltip>
-          <Tooltip
-            title="Sell (S)"
-            placement="top"
-            arrow
-            TransitionComponent={Grow}>
+          <Tooltip title="Sell (S)" placement="top" arrow>
             <button
               className="sell"
               onClick={() => openBuyWindow(stock.symbol, "SELL")}>
               Sell
             </button>
           </Tooltip>
-          <Tooltip
-            title="Analytics (A)"
-            placement="top"
-            arrow
-            TransitionComponent={Grow}>
-            <button className="action">
+          <Tooltip title="Analytics (A)" placement="top" arrow>
+            <button
+              className="action"
+              onClick={() => openChartWindow(stock.symbol)}>
               <BarChartOutlined />
             </button>
           </Tooltip>
-          <Tooltip
-            title="Remove"
-            placement="top"
-            arrow
-            TransitionComponent={Grow}>
+          <Tooltip title="Remove" placement="top" arrow>
             <button className="action" onClick={onRemove}>
               <DeleteOutline />
-            </button>
-          </Tooltip>
-          <Tooltip
-            title="More"
-            placement="top"
-            arrow
-            TransitionComponent={Grow}>
-            <button className="action">
-              <MoreHoriz />
             </button>
           </Tooltip>
         </span>

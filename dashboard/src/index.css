@@ -40,22 +40,16 @@ body {
   box-sizing: border-box;
 }
 
-/* --- General Element Styling --- */
 h1,
 h2,
 h3,
 h4,
 h5,
-h6 {
-  margin: 0;
-  font-weight: 600;
-}
-
+h6,
 p {
   margin: 0;
 }
 
-/* --- Reusable Utility Classes --- */
 .profit {
   color: var(--color-success) !important;
 }
@@ -63,9 +57,7 @@ p {
 .loss {
   color: var(--color-danger) !important;
 }
-/* --- Add to bottom of index.css --- */
 
-/* Modern Live Price Card */
 .live-price-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);

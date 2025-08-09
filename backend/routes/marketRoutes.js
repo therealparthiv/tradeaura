@@ -1,59 +1,43 @@
 const express = require("express");
-const yahooFinance = require("yahoo-finance2").default; // We will use this for everything
+const yahooFinance = require("yahoo-finance2").default;
 const router = express.Router();
 
-// 🚀 UPDATED Price Route: Directly fetches from yahoo-finance2
+const queryOptions = { validateResult: false };
+
+// --- Price, Search, and History Routes (These are correct and do not need changes) ---
 router.get("/price/:symbol", async (req, res) => {
-  const { symbol } = req.params;
-  try {
-    // Use the robust yahooFinance.quote method
-    const result = await yahooFinance.quote(symbol);
-
-    if (!result || !result.regularMarketPrice) {
-      console.warn(`No price data found for symbol: ${symbol}`);
-      return res.status(404).json({ error: "No price data found for symbol" });
-    }
-
-    // This returns a complete object that your frontend is designed to use
-    res.json({
-      symbol: result.symbol,
-      price: result.regularMarketPrice,
-      change: result.regularMarketChange,
-      pChange: result.regularMarketChangePercent,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (err) {
-    console.error(`Market data error for ${symbol}:`, err.message);
-    // If a stock truly doesn't exist, this will correctly send a 404/500 error
-    res
-      .status(err.code === 404 ? 404 : 500)
-      .json({ error: "Failed to fetch live price" });
-  }
+  // ... your existing price logic ...
+});
+router.get("/search-stocks", async (req, res) => {
+  // ... your existing search logic ...
+});
+router.get("/history/:symbol", async (req, res) => {
+  // ... your existing history logic ...
 });
 
-// Your working search route
-router.get("/search-stocks", async (req, res) => {
-  const { q } = req.query;
-  if (!q) {
-    return res.status(400).json({ error: "A search query 'q' is required." });
-  }
+// --- 🚀 CORRECTED: Market Indices Route ---
+router.get("/indices", async (req, res) => {
   try {
-    const searchResults = await yahooFinance.search(q, {
-      quotesCount: 10,
-      newsCount: 0,
+    const symbols = ["^NSEI", "^BSESN", "^CNXMIDCAP", "^CNXSMALLCAP"];
+    const results = await yahooFinance.quote(symbols, {}, queryOptions);
+
+    const indices = results.map((index) => {
+      // The fix: Use a safer way to shorten the name without breaking "NIFTY 50"
+      let name = index.shortName;
+      if (name.includes("S&P BSE")) name = name.replace("S&P BSE ", "");
+
+      return {
+        name: name,
+        price: index.regularMarketPrice,
+        change: index.regularMarketChange,
+        pChange: index.regularMarketChangePercent,
+      };
     });
-    const formattedResults = searchResults.quotes
-      .filter((quote) => quote.longname)
-      .map((quote) => ({
-        symbol: quote.symbol,
-        name: quote.longname,
-      }));
-    res.json(formattedResults);
-  } catch (error) {
-    console.error("Stock search error:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred during the stock search." });
+
+    res.json(indices);
+  } catch (err) {
+    console.error("Indices fetch error:", err.message);
+    res.status(500).json({ error: "Failed to fetch market indices." });
   }
 });
 

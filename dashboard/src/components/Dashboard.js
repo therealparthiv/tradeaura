@@ -8,11 +8,13 @@ import Positions from "./Positions";
 import Summary from "./Summary";
 import WatchList from "./WatchList";
 import BuyActionWindow from "./BuyActionWindow";
+import StockChartModal from "./StockChartModal";
 import GeneralContext from "./GeneralContext";
-import "./Dashboard.css"; // Import new styles
+import "./Dashboard.css";
 
 const Dashboard = () => {
-  const { buyWindow } = useContext(GeneralContext);
+  const { buyWindow, chartWindow, closeChartWindow } =
+    useContext(GeneralContext);
 
   return (
     <div className="dashboard-layout">
@@ -29,8 +31,16 @@ const Dashboard = () => {
           <Route path="/apps" element={<Apps />} />
         </Routes>
       </main>
+
       {buyWindow.isOpen && (
         <BuyActionWindow uid={buyWindow.uid} mode={buyWindow.mode} />
+      )}
+
+      {chartWindow.isOpen && (
+        <StockChartModal
+          symbol={chartWindow.symbol}
+          onClose={closeChartWindow}
+        />
       )}
     </div>
   );

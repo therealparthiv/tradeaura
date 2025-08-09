@@ -1,30 +1,48 @@
 import React, { useEffect, useState } from "react";
 import axios from "../utils/axiosInstance";
 import PortfolioPerformance from "./PortfolioPerformance";
-import LivePrice from "./LivePrice";
 import "./Summary.css";
+
+const IndexCard = ({ data }) => {
+  if (!data) return <div className="index-card loading"></div>;
+  const isProfit = data.change >= 0;
+  return (
+    <div className="index-card">
+      <h4 className="index-card-name">{data.name}</h4>
+      <p className={`index-card-price ${isProfit ? "profit" : "loss"}`}>
+        {data.price.toFixed(2)}
+      </p>
+      <p className={`index-card-change ${isProfit ? "profit" : "loss"}`}>
+        {isProfit ? "+" : ""}
+        {data.change.toFixed(2)} ({data.pChange.toFixed(2)}%)
+      </p>
+    </div>
+  );
+};
 
 const Summary = () => {
   const [holdings, setHoldings] = useState([]);
   const [prices, setPrices] = useState({});
   const [portfolioHistory, setPortfolioHistory] = useState([]);
+  const [indices, setIndices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [holdingsRes, historyRes] = await Promise.all([
+        const [holdingsRes, historyRes, indicesRes] = await Promise.all([
           axios.get("/api/holdings"),
           axios.get("/api/portfolio-history"),
+          axios.get("/api/indices"),
         ]);
 
-        const holdingsData = holdingsRes.data;
-        setHoldings(holdingsData);
+        setHoldings(holdingsRes.data);
         setPortfolioHistory(historyRes.data);
+        setIndices(indicesRes.data);
 
         const priceMap = {};
-        for (let stock of holdingsData) {
+        for (let stock of holdingsRes.data) {
           try {
             const priceRes = await axios.get(`/api/price/${stock.name}`);
             priceMap[stock.name] = parseFloat(priceRes.data.price) || 0;
@@ -39,60 +57,30 @@ const Summary = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
-
-  const getLTP = (symbol) => prices[symbol] || 0;
-
-  const investment = holdings.reduce((acc, s) => acc + s.avg * s.qty, 0);
-  const currentValue = holdings.reduce(
-    (acc, s) => acc + getLTP(s.name) * s.qty,
-    0
-  );
-  const pnl = currentValue - investment;
 
   return (
     <div className="summary-page">
       <div className="summary-header">
         <h1>Dashboard</h1>
-        <p>Welcome back, here's a snapshot of your portfolio.</p>
       </div>
 
-      <div className="summary-main-card">
-        <div className="performance-section">
-          <h3 className="section-title">Performance</h3>
-          {/* This component will now render correctly inside its container */}
-          <PortfolioPerformance history={portfolioHistory} loading={loading} />
-        </div>
-        <div className="overview-section">
-          <h3 className="section-title">Portfolio Overview</h3>
-          <div className="overview-metric">
-            <span className="metric-label">Total Investment</span>
-            <span className="metric-value">₹{investment.toFixed(2)}</span>
-          </div>
-          <div className="overview-metric">
-            <span className="metric-label">Current Value</span>
-            <span className="metric-value">₹{currentValue.toFixed(2)}</span>
-          </div>
-          <div className="overview-metric">
-            <span className="metric-label">Total P&L</span>
-            <span className={`metric-value ${pnl >= 0 ? "profit" : "loss"}`}>
-              {pnl >= 0
-                ? `+₹${pnl.toFixed(2)}`
-                : `-₹${Math.abs(pnl).toFixed(2)}`}
-            </span>
-          </div>
-        </div>
-      </div>
+      <PortfolioPerformance
+        holdings={holdings}
+        prices={prices}
+        history={portfolioHistory}
+        loading={loading}
+      />
 
       <div className="market-watch-section">
         <h3>Market Watch</h3>
-        <div className="price-grid">
-          <LivePrice symbol="RELIANCE.NS" />
-          <LivePrice symbol="TCS.NS" />
-          <LivePrice symbol="HDFCBANK.NS" />
-          <LivePrice symbol="ITC.NS" />
+        <div className="indices-grid">
+          {loading
+            ? [...Array(4)].map((_, i) => <IndexCard key={i} />)
+            : indices.map((index) => (
+                <IndexCard key={index.name} data={index} />
+              ))}
         </div>
       </div>
     </div>

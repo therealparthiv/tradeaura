@@ -19,5 +19,5 @@
   flex-grow: 1; /* Takes up the remaining space */
   height: 100%;
   overflow-y: auto; /* Allows only this main content area to scroll */
-  padding: 1.5rem 2rem; /* Add some comfortable padding */
+  padding: 1.5rem 2rem;
 }

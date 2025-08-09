@@ -7,7 +7,6 @@ import {
   LinearScale,
   CategoryScale,
   Tooltip,
-  Legend,
   Filler,
 } from "chart.js";
 
@@ -18,33 +17,52 @@ ChartJS.register(
   LinearScale,
   CategoryScale,
   Tooltip,
-  Legend,
   Filler
 );
 
-const PortfolioPerformance = ({ history, loading }) => {
-  // Display a loading state while data is being fetched
+const PortfolioPerformance = ({ holdings, prices, history, loading }) => {
   if (loading) {
     return (
-      <div className="loading-chart-container">
+      <div className="portfolio-performance-card loading">
         <div className="spinner"></div>
-        <p>Loading Performance Data...</p>
+        <p>Loading Portfolio Data...</p>
       </div>
     );
   }
+
+  // --- All calculations are now handled inside this component ---
+  const getLTP = (symbol) => prices[symbol] || 0;
+  const investment = holdings.reduce((acc, s) => acc + s.avg * s.qty, 0);
+  const currentValue = holdings.reduce(
+    (acc, s) => acc + getLTP(s.name) * s.qty,
+    0
+  );
+  const pnl = currentValue - investment;
+  const isProfit = pnl >= 0;
+
+  // --- Dynamic Chart Styling (Zerodha-style) ---
+  const chartColor = isProfit ? "rgb(5, 150, 105)" : "rgb(220, 38, 38)"; // Green for profit, Red for loss
+  const chartGradient = isProfit
+    ? "rgba(16, 185, 129, 0.1)"
+    : "rgba(239, 68, 68, 0.1)";
 
   const data = {
     labels: history.map((point) => point.time),
     datasets: [
       {
-        label: "Portfolio Value (₹)",
         data: history.map((point) => point.value),
+        borderColor: chartColor,
+        backgroundColor: (context) => {
+          const ctx = context.chart.ctx;
+          const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+          gradient.addColorStop(0, chartGradient);
+          gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+          return gradient;
+        },
         fill: true,
-        backgroundColor: "rgba(59, 130, 246, 0.1)",
-        borderColor: "#3b82f6",
-        tension: 0.3,
+        tension: 0.4,
         pointRadius: 0,
-        pointHoverRadius: 5,
+        borderWidth: 2,
       },
     ],
   };
@@ -57,37 +75,41 @@ const PortfolioPerformance = ({ history, loading }) => {
       tooltip: {
         mode: "index",
         intersect: false,
-        backgroundColor: "#fff",
-        titleColor: "#1e293b",
-        bodyColor: "#475569",
-        borderColor: "#e2e8f0",
-        borderWidth: 1,
+        displayColors: false,
+        backgroundColor: "#1e293b",
+        titleColor: "#cbd5e1",
+        bodyColor: "#f8fafc",
+        padding: 10,
+        cornerRadius: 6,
       },
     },
     scales: {
-      x: {
-        grid: { display: false },
-        ticks: { color: "#94a3b8", font: { family: "'Inter', sans-serif" } },
-      },
-      y: {
-        grid: { color: "#f1f5f9" },
-        ticks: {
-          color: "#94a3b8",
-          font: { family: "'Inter', sans-serif" },
-          callback: (value) => `₹${value / 1000}k`,
-        },
-      },
-    },
-    interaction: {
-      intersect: false,
-      mode: "index",
+      x: { display: false, grid: { display: false } },
+      y: { display: false, grid: { display: false } },
     },
   };
 
-  // The key is this container div which gets a height from the CSS
   return (
-    <div className="chart-container">
-      <Line data={data} options={options} />
+    <div className="portfolio-performance-card">
+      <div className="card-header">
+        <h3 className="section-title">Portfolio Overview</h3>
+        <div className={`pnl-display ${isProfit ? "profit" : "loss"}`}>
+          {pnl >= 0 ? `+₹${pnl.toFixed(2)}` : `-₹${Math.abs(pnl).toFixed(2)}`}
+        </div>
+      </div>
+      <div className="card-chart-container">
+        <Line data={data} options={options} />
+      </div>
+      <div className="card-footer">
+        <div className="footer-metric">
+          <span>Total Investment</span>
+          <span className="value">₹{investment.toFixed(2)}</span>
+        </div>
+        <div className="footer-metric">
+          <span>Current Value</span>
+          <span className="value">₹{currentValue.toFixed(2)}</span>
+        </div>
+      </div>
     </div>
   );
 };
