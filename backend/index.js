@@ -33,8 +33,21 @@ app.use("/api/auth", authRoutes);
 app.use("/api", marketRoutes);
 app.use("/api/watchlist", watchlistRoutes);
 
+// Get User Details for TopBar
+app.get("/api/user-details", authMiddleware, (req, res) => {
+  if (req.user) {
+    res.json({
+      name: req.user.name,
+      email: req.user.email,
+    });
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+});
+
 // --- Core Trading Endpoints ---
 
+// ✅ Create a new, detailed order
 app.post("/newOrder", authMiddleware, async (req, res) => {
   const { name, qty, price, mode, product, orderType, triggerPrice } = req.body;
   const userId = req.user._id;
@@ -61,6 +74,7 @@ app.post("/newOrder", authMiddleware, async (req, res) => {
   }
 });
 
+// ✅ Fetch all orders for the logged-in user
 app.get("/api/orders", authMiddleware, async (req, res) => {
   try {
     const orders = await OrderModel.find({ userId: req.user._id }).sort({
@@ -72,6 +86,7 @@ app.get("/api/orders", authMiddleware, async (req, res) => {
   }
 });
 
+// ✅ Calculate CNC (Long-term) holdings
 app.get("/api/holdings", authMiddleware, async (req, res) => {
   const userId = req.user._id;
   try {
@@ -107,6 +122,7 @@ app.get("/api/holdings", authMiddleware, async (req, res) => {
   }
 });
 
+// ✅ Calculate MIS (Intraday) positions
 app.get("/api/positions", authMiddleware, async (req, res) => {
   const userId = req.user._id;
   try {
@@ -134,30 +150,22 @@ app.get("/api/positions", authMiddleware, async (req, res) => {
   }
 });
 
-// --- ✅ ACCURATE Portfolio History Endpoint ---
+// ✅ ACCURATE Portfolio History from Your Actual Orders
 app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
   try {
     const orders = await OrderModel.find({ userId: req.user._id }).sort({
       createdAt: "asc",
     });
-
     if (orders.length === 0) {
       return res.json([{ time: "Start", value: 0 }]);
     }
-
     const portfolio = new Map();
     const history = [{ time: "Start", value: 0 }];
-
     for (const order of orders) {
       const stock = portfolio.get(order.name) || { qty: 0 };
-
-      if (order.mode === "BUY") {
-        stock.qty += order.qty;
-      } else {
-        stock.qty -= order.qty;
-      }
+      if (order.mode === "BUY") stock.qty += order.qty;
+      else stock.qty -= order.qty;
       portfolio.set(order.name, stock);
-
       let cumulativeValue = 0;
       for (const [symbol, data] of portfolio.entries()) {
         const latestOrderForSymbol = orders
@@ -168,7 +176,6 @@ app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
           : 0;
         cumulativeValue += data.qty * lastKnownPrice;
       }
-
       history.push({
         time: new Date(order.createdAt).toLocaleDateString("en-IN", {
           month: "short",
@@ -177,10 +184,8 @@ app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
         value: Math.round(cumulativeValue),
       });
     }
-
     res.json(history);
   } catch (err) {
-    console.error("Accurate Portfolio History Error:", err.message);
     res.status(500).json({ message: "Failed to generate portfolio history" });
   }
 });

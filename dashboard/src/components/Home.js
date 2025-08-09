@@ -1,29 +1,27 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "../utils/axiosInstance";
-
+import React, { useContext } from "react";
 import Dashboard from "./Dashboard";
 import TopBar from "./TopBar";
+import GeneralContext from "./GeneralContext";
 
-const Home = () => {
-  const [authChecked, setAuthChecked] = useState(false);
-  const navigate = useNavigate();
+const Home = ({ toggleTheme, theme }) => {
+  const { authStatus } = useContext(GeneralContext);
 
-  useEffect(() => {
-    axios
-      .get("/api/auth/profile")
-      .then(() => setAuthChecked(true))
-      .catch(() => {
-        alert("Unauthorized! Redirecting to login...");
-        window.location.href = "http://localhost:3000/login"; // from frontend app
-      });
-  }, []);
+  // This check is crucial. It prevents the dashboard from trying to render
+  // and fetch data before we know the user is logged in.
+  if (authStatus === "PENDING") {
+    return <div className="loading-fullscreen">Authenticating...</div>;
+  }
 
-  if (!authChecked) return <p>Loading...</p>;
+  // If the authentication check fails, redirect to the login page.
+  if (authStatus === "LOGGED_OUT") {
+    window.location.href = "http://localhost:3000/login";
+    return null; // Render nothing while the redirect happens.
+  }
 
+  // Only render the full dashboard UI if authentication is successful.
   return (
     <>
-      <TopBar />
+      <TopBar toggleTheme={toggleTheme} theme={theme} />
       <Dashboard />
     </>
   );

@@ -5,52 +5,53 @@ const GeneralContext = createContext();
 
 export const GeneralContextProvider = ({ children }) => {
   const [watchlist, setWatchlist] = useState([]);
+  const [authStatus, setAuthStatus] = useState("PENDING");
+
   const [buyWindow, setBuyWindow] = useState({
     isOpen: false,
     uid: null,
     mode: null,
   });
-
   const [chartWindow, setChartWindow] = useState({
     isOpen: false,
     symbol: null,
   });
 
+  useEffect(() => {
+    axios
+      .get("/api/auth/profile")
+      .then(() => setAuthStatus("LOGGED_IN"))
+      .catch(() => setAuthStatus("LOGGED_OUT"));
+  }, []);
+
   const refreshWatchlist = async () => {
     try {
       const res = await axios.get("/api/watchlist");
-      if (res.data && Array.isArray(res.data.stocks)) {
-        setWatchlist(res.data.stocks);
-      } else {
-        setWatchlist([]);
-      }
+      setWatchlist(res.data?.stocks || []);
     } catch (err) {
       console.error("Error fetching watchlist:", err);
-      setWatchlist([]);
     }
   };
 
   useEffect(() => {
-    refreshWatchlist();
-  }, []);
+    if (authStatus === "LOGGED_IN") {
+      refreshWatchlist();
+    }
+  }, [authStatus]);
 
-  const openBuyWindow = (symbol, mode) => {
+  const openBuyWindow = (symbol, mode) =>
     setBuyWindow({ isOpen: true, uid: symbol, mode: mode });
-  };
-  const closeBuyWindow = () => {
+  const closeBuyWindow = () =>
     setBuyWindow({ isOpen: false, uid: null, mode: null });
-  };
-
-  const openChartWindow = (symbol) => {
+  const openChartWindow = (symbol) =>
     setChartWindow({ isOpen: true, symbol: symbol });
-  };
-  const closeChartWindow = () => {
+  const closeChartWindow = () =>
     setChartWindow({ isOpen: false, symbol: null });
-  };
 
   return (
     <GeneralContext.Provider
       value={{
+        authStatus,
         watchlist,
         refreshWatchlist,
         buyWindow,
