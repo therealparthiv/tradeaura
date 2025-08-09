@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const { OrderModel } = require("./model/OrderModel");
 const authRoutes = require("./routes/authRoutes");
 const marketRoutes = require("./routes/marketRoutes");
+const watchlistRoutes = require("./routes/watchlistRoutes"); // 1. REQUIRE THE WATCHLIST ROUTES
 const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(cookieParser());
 // ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api", marketRoutes);
+app.use("/api/watchlist", watchlistRoutes); // 2. USE THE WATCHLIST ROUTES
 
 // ✅ Place a new order (per user)
 app.post("/newOrder", authMiddleware, async (req, res) => {

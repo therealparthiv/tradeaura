@@ -14,9 +14,14 @@ export const GeneralContextProvider = ({ children }) => {
   const refreshWatchlist = async () => {
     try {
       const res = await axios.get("/api/watchlist");
-      setWatchlist(res.data.stocks || []);
+      // The backend sends an object like { stocks: [...] }, so we access the .stocks property
+      if (res.data && Array.isArray(res.data.stocks)) {
+        setWatchlist(res.data.stocks);
+      } else {
+        setWatchlist([]);
+      }
     } catch (err) {
-      console.error("Failed to refresh watchlist:", err);
+      console.error("Error fetching watchlist from backend:", err);
       setWatchlist([]);
     }
   };

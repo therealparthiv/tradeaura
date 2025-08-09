@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import GeneralContext from "./GeneralContext";
-import Search from "./Search"; // Make sure you have Search.js component
-import axios from "../utils/axiosInstance"; // Your backend axios
+import Search from "./Search";
+import axios from "../utils/axiosInstance";
 import {
   KeyboardArrowDown,
   KeyboardArrowUp,
@@ -13,13 +13,7 @@ import { Tooltip, Grow } from "@mui/material";
 
 const WatchList = () => {
   const { watchlist, refreshWatchlist } = useContext(GeneralContext);
-  const [displayList, setDisplayList] = useState([]);
 
-  useEffect(() => {
-    setDisplayList(watchlist);
-  }, [watchlist]);
-
-  // Remove stock from watchlist
   const handleRemove = async (symbol) => {
     try {
       await axios.delete(`/api/watchlist/${symbol}`);
@@ -32,15 +26,15 @@ const WatchList = () => {
   return (
     <div className="watchlist-container">
       <Search />
-
       <ul className="list">
-        {displayList.map((stock, index) => (
-          <WatchListItem
-            key={index}
-            stock={stock}
-            onRemove={() => handleRemove(stock.symbol)}
-          />
-        ))}
+        {watchlist &&
+          watchlist.map((stock) => (
+            <WatchListItem
+              key={stock._id || stock.symbol}
+              stock={stock}
+              onRemove={() => handleRemove(stock.symbol)}
+            />
+          ))}
       </ul>
     </div>
   );
@@ -51,6 +45,30 @@ export default WatchList;
 const WatchListItem = ({ stock, onRemove }) => {
   const [showActions, setShowActions] = useState(false);
   const { openBuyWindow } = useContext(GeneralContext);
+  const [liveData, setLiveData] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      if (!stock.symbol) return;
+      try {
+        const res = await axios.get(`/api/price/${stock.symbol}`);
+        setLiveData(res.data);
+      } catch (err) {
+        setError("N/A");
+        console.error(`Failed to fetch price for ${stock.symbol}`, err);
+      }
+    };
+
+    fetchPrice();
+    const interval = setInterval(fetchPrice, 30000);
+    return () => clearInterval(interval);
+  }, [stock.symbol]);
+
+  // Determine price and change from live data
+  const price = liveData ? liveData.price : 0.0;
+  const isDown = liveData ? liveData.change < 0 : false;
+  const pChange = liveData ? Math.abs(liveData.pChange || 0) : 0;
 
   return (
     <li
@@ -58,7 +76,22 @@ const WatchListItem = ({ stock, onRemove }) => {
       onMouseLeave={() => setShowActions(false)}
       className="watchlist-item">
       <div className="item">
-        <p>{stock.symbol}</p>
+        <p className={isDown ? "loss" : "profit"}>{stock.symbol}</p>
+        <div className="item-info">
+          {error ? (
+            <span className="loss">{error}</span>
+          ) : liveData ? (
+            <>
+              <span className={isDown ? "loss" : "profit"}>
+                {isDown ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
+                {pChange.toFixed(2)}%
+              </span>
+              <span>₹{price.toFixed(2)}</span>
+            </>
+          ) : (
+            <span>Loading...</span>
+          )}
+        </div>
       </div>
 
       {showActions && (
@@ -74,7 +107,6 @@ const WatchListItem = ({ stock, onRemove }) => {
               Buy
             </button>
           </Tooltip>
-
           <Tooltip
             title="Sell (S)"
             placement="top"
@@ -86,7 +118,6 @@ const WatchListItem = ({ stock, onRemove }) => {
               Sell
             </button>
           </Tooltip>
-
           <Tooltip
             title="Analytics (A)"
             placement="top"
@@ -96,7 +127,6 @@ const WatchListItem = ({ stock, onRemove }) => {
               <BarChartOutlined />
             </button>
           </Tooltip>
-
           <Tooltip
             title="Remove"
             placement="top"
@@ -106,7 +136,6 @@ const WatchListItem = ({ stock, onRemove }) => {
               <DeleteOutline />
             </button>
           </Tooltip>
-
           <Tooltip
             title="More"
             placement="top"
