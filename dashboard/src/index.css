@@ -27,6 +27,23 @@
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* --- Dark Theme Variables --- */
+body.dark {
+  --bg-canvas: #0b1120;
+  --bg-surface: #131b2c;
+  --bg-muted: #1e293b;
+
+  --border-color: #334155;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-light: #64748b;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
 body {
   margin: 0;
   font-family: var(--font-primary);

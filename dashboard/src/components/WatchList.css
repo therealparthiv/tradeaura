@@ -4,8 +4,8 @@
   flex-basis: 32%;
   height: 100%;
   box-sizing: border-box;
-  background-color: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  background-color: var(--bg-surface); /* Updated */
+  border-right: 1px solid var(--border-color); /* Updated */
   display: flex;
   flex-direction: column;
 }
@@ -19,7 +19,7 @@
 }
 
 .list li {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-color); /* Updated */
   padding: 12px 1rem;
   position: relative;
 }
@@ -37,7 +37,7 @@
 .item > p {
   margin: 0;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary); /* Updated */
 }
 
 .item-info {
@@ -45,19 +45,19 @@
   justify-content: flex-end;
   align-items: center;
   gap: 1rem;
-  font-family: "Roboto Mono", monospace; /* Monospaced font for numbers */
+  font-family: "Roboto Mono", monospace;
   text-align: right;
 }
 
 .item-info > span:first-child {
-  width: 70px; /* Fixed width for alignment */
+  width: 70px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
 }
 
 .item-info > span:last-child {
-  width: 80px; /* Fixed width for alignment */
+  width: 80px;
 }
 
 /* Hover Actions (Buy/Sell buttons) */
@@ -70,8 +70,9 @@
   align-items: center;
   justify-content: flex-end;
   display: none; /* Hidden by default */
-  background: linear-gradient(to left, white 70%, transparent 100%);
   padding-right: 1rem;
+  /* Updated for Dark Mode Gradient */
+  background: linear-gradient(to left, var(--bg-surface) 70%, transparent 100%);
 }
 
 .list li:hover .actions {
@@ -104,8 +105,8 @@
 }
 
 .action {
-  background-color: #f1f5f9;
-  color: #475569;
+  background-color: var(--bg-muted); /* Updated */
+  color: var(--text-secondary); /* Updated */
   padding: 6px;
   display: flex;
   align-items: center;
@@ -117,9 +118,9 @@
 
 /* Profit and Loss Colors */
 .profit {
-  color: #16a34a !important; /* Tailwind green-600 */
+  color: var(--color-success) !important;
 }
 
 .loss {
-  color: #dc2626 !important; /* Tailwind red-600 */
+  color: var(--color-danger) !important;
 }
