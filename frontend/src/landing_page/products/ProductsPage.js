@@ -19,9 +19,9 @@ function ProductsPage() {
         isImageLeft={false}
       />
       <ProductSection
-        imageURL="/media/images/us_stocks_groww.png"
-        productName="US Stocks"
-        productDescription="Diversify your portfolio by investing in the US market. Buy and sell shares of companies like Apple, Google, and Amazon."
+        imageURL="/media/images/fnoHeader.6ac03b52.svg" // New image for F&O
+        productName="Futures & Options"
+        productDescription="Trade F&O with advanced tools like Option Chain, Basket Orders, and premium charts to make informed decisions."
         isImageLeft={true}
       />
     </>
