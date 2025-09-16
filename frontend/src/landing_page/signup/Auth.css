@@ -1,0 +1,340 @@
+/* Container for the entire auth page */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8fbff 0%, #f1f7fe 100%);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+}
+
+/* The main card holding the form */
+.auth-card {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00cd66 0%, #00b555 100%);
+}
+
+/* Heading style for "Welcome Back", "Register" */
+.auth-card h2 {
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.auth-card .subtitle {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+/* Container for each label and input field */
+.input-group {
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.input-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+/* Input field styling */
+.input-group input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.input-group input::placeholder {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Focus state for input fields */
+.input-group input:focus {
+  outline: none;
+  border-color: #00cd66;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 205, 102, 0.08);
+}
+
+/* Error state */
+.input-group.error input {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.input-group .error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  display: none;
+}
+
+.input-group.error .error-message {
+  display: block;
+}
+
+/* Button specific to the auth form */
+.auth-btn {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00cd66 0%, #00b555 100%);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}
+
+.auth-btn:hover {
+  background: linear-gradient(135deg, #00b555 0%, #009944 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 205, 102, 0.25);
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(0, 205, 102, 0.2);
+}
+
+.auth-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Loading state */
+.auth-btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.auth-btn.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Divider for social login */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.divider span {
+  padding: 0 1rem;
+  background: #ffffff;
+}
+
+/* Social login buttons */
+.social-login {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.social-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.social-btn:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+/* Text for switching between Login/Signup */
+.switch-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.switch-link {
+  color: #00cd66;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.switch-link:hover {
+  color: #00b555;
+  text-decoration: underline;
+}
+
+/* Remember me checkbox */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #00cd66;
+}
+
+.checkbox-wrapper label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  cursor: pointer;
+}
+
+.forgot-password {
+  color: #00cd66;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.forgot-password:hover {
+  color: #00b555;
+  text-decoration: underline;
+}
+
+/* Success state */
+.success-message {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+.success-message.show {
+  display: block;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .auth-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .social-login {
+    flex-direction: column;
+  }
+
+  .checkbox-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+/* Focus visible for accessibility */
+.auth-btn:focus-visible,
+.social-btn:focus-visible,
+.switch-link:focus-visible,
+.forgot-password:focus-visible {
+  outline: 2px solid #00cd66;
+  outline-offset: 2px;
+}

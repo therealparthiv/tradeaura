@@ -1,0 +1,43 @@
+.product-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 5%;
+  gap: 5rem;
+}
+
+.product-section:nth-child(odd) {
+  background-color: var(--background-light);
+}
+
+.product-section .text-container {
+  flex: 1;
+  max-width: 500px;
+}
+
+.product-section.image-right {
+  flex-direction: row-reverse;
+}
+
+.product-section .image-container {
+  flex: 1;
+  text-align: center;
+}
+
+.product-section img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+}
+
+.product-section h2 {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.product-section p {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}

@@ -1,22 +1,27 @@
 import React from "react";
 
 function Hero() {
+  const heroStyle = {
+    textAlign: "center",
+    padding: "5rem 2rem",
+    backgroundColor: "var(--background-light)",
+  };
+
+  const h1Style = {
+    fontSize: "3rem",
+    marginBottom: "1rem",
+  };
+
+  const pStyle = {
+    fontSize: "1.2rem",
+    color: "var(--text-secondary)",
+  };
+
   return (
-    <div className="container border-bottom mb-5">
-      <div className="text-center mt-5 p-3">
-        <h1>Technology</h1>
-        <h3 className="text-muted mt-3 fs-4">
-          Sleek, modern and intuitive trading platforms
-        </h3>
-        <p className="mt-3 mb-5">
-          Check out our{" "}
-          <a href="" style={{ textDecoration: "none" }}>
-            investment offerings{" "}
-            <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-          </a>
-        </p>
-      </div>
-    </div>
+    <section style={heroStyle}>
+      <h1 style={h1Style}>One app for all your investments</h1>
+      <p style={pStyle}>Stocks, Mutual Funds, US Stocks, and more.</p>
+    </section>
   );
 }
 

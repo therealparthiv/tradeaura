@@ -1,31 +1,50 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import "../Common.css";
 
 function Education() {
   return (
-    <div className="container mt-5">
-      <div className="row">
-        <div className="col-6">
-          <img src="media/images/education.svg" style={{ width: "70%" }} />
+    <section
+      className="section"
+      style={{ backgroundColor: "var(--background-light)" }}>
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          gap: "5rem",
+        }}>
+        <div style={{ flex: 1 }}>
+          <img
+            src="media/images/education.png"
+            alt="Education"
+            style={{ maxWidth: "100%" }}
+          />
         </div>
-        <div className="col-6">
-          <h1 className="mb-3 fs-2">Free and open market education</h1>
-          <p>
-            Varsity, the largest online stock market education book in the world
-            covering everything from the basics to advanced trading.
+        <div style={{ flex: 1, textAlign: "left" }}>
+          <h2
+            className="section-title"
+            style={{ textAlign: "left", display: "block" }}>
+            Learn About Investing
+          </h2>
+          <p
+            style={{
+              color: "var(--text-secondary)",
+              fontSize: "1.2rem",
+              lineHeight: "1.7",
+              marginBottom: "2rem",
+            }}>
+            Explore our free collection of articles, resources, and market
+            insights. From beginner guides to advanced strategies, we have
+            everything you need to learn on the go.
           </p>
-          <a href="" style={{ textDecoration: "none" }}>
-            Versity <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-          </a>
-          <p className="mt-5">
-            TradingQ&A, the most active trading and investment community in
-            India for all your market related queries.
-          </p>
-          <a href="" style={{ textDecoration: "none" }}>
-            TradingQ&A <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-          </a>
+          <Link to="/learn" className="btn">
+            Start Learning
+          </Link>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

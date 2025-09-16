@@ -1,21 +1,14 @@
 import React from "react";
+import "./OpenAccount.css"; // Import the new CSS
 
 function OpenAccount() {
   return (
-    <div className="container p-5 mb-5">
-      <div className="row text-center">
-        <h1 className="mt-5">Open a Zerodha account</h1>
-        <p>
-          Modern platforms and apps, ₹0 investments, and flat ₹20 intraday and
-          F&O trades.
-        </p>
-        <button
-          className="p-2 btn btn-primary fs-5 mb-5"
-          style={{ width: "20%", margin: "0 auto" }}>
-          Sign up Now
-        </button>
-      </div>
-    </div>
+    <section className="open-account-section">
+      <h2>Ready to start your investment journey?</h2>
+      <a href="/signup" className="btn btn-light">
+        Open an Account
+      </a>
+    </section>
   );
 }
 

@@ -1,0 +1,67 @@
+/* Styling for page hero sections */
+.page-hero {
+  text-align: center;
+  padding: 5rem 2rem;
+  background-color: var(--background-light);
+  border-bottom: 1px solid var(--border-color);
+}
+.page-hero h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.page-hero p {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* General section styling */
+.section {
+  padding: 6rem 5%;
+  text-align: center;
+}
+.section-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 4rem;
+  position: relative;
+  display: inline-block;
+}
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background-color: var(--groww-green);
+  border-radius: 2px;
+}
+
+/* Reusable card style */
+.card {
+  background-color: #fff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  border: 1px solid var(--border-color);
+  width: 340px; /* Set a fixed width for each card */
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-8px);
+}
+
+/* --- THIS IS THE CORRECTED CENTERING LOGIC --- */
+.grid-container {
+  display: flex; /* Use Flexbox */
+  flex-wrap: wrap; /* Allow cards to wrap to the next line */
+  justify-content: center; /* This is the key to centering the items */
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}

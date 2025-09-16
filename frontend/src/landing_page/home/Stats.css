@@ -1,0 +1,18 @@
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 4rem 2rem;
+  background-color: #fff;
+}
+.stat-item {
+  text-align: center;
+}
+.stat-item h2 {
+  font-size: 3rem;
+  color: var(--groww-green);
+  font-weight: 700;
+}
+.stat-item p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}

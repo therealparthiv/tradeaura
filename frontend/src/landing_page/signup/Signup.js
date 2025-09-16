@@ -1,11 +1,13 @@
 import { useState } from "react";
 import axios from "../../utils/axiosInstance";
 import { useNavigate, Link } from "react-router-dom";
+import "./Auth.css";
 
 const Signup = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,67 +15,87 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // reset any previous errors
+    setIsLoading(true);
     try {
       await axios.post("/api/auth/signup", form);
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "450px" }}>
-      <div className="card p-4 shadow">
-        <h2 className="text-center mb-4">Create an Account</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Create an Account</h2>
+        <p className="subtitle">Join us today and start your journey</p>
 
-        {/* ❗ Show error if signup fails */}
-        {error && <div className="alert alert-danger">{error}</div>}
+        {error && (
+          <div className="error-message show" style={{ marginBottom: "1rem" }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Name</label>
+          <div className="input-group">
+            <label>Name</label>
             <input
               name="name"
-              className="form-control"
               placeholder="John Doe"
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Email</label>
+          <div className="input-group">
+            <label>Email</label>
             <input
               name="email"
               type="email"
-              className="form-control"
               placeholder="john@example.com"
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="form-label">Password</label>
+          <div className="input-group">
+            <label>Password</label>
             <input
               name="password"
               type="password"
-              className="form-control"
               placeholder="••••••••"
               onChange={handleChange}
               required
             />
           </div>
 
-          <button type="submit" className="btn btn-primary w-100">
-            Sign Up
+          <div
+            className="checkbox-group"
+            style={{ justifyContent: "flex-start" }}>
+            <div className="checkbox-wrapper">
+              <input type="checkbox" id="terms" required />
+              <label htmlFor="terms">
+                I agree to the Terms of Service and Privacy Policy
+              </label>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className={`auth-btn ${isLoading ? "loading" : ""}`}
+            disabled={isLoading}>
+            {!isLoading && "Sign Up"}
           </button>
         </form>
 
-        {/* 🔗 Already registered? */}
-        <p className="text-center mt-3">
-          Already have an account? <Link to="/login">Log in here</Link>
-        </p>
+        <div className="switch-text">
+          Already have an account?{" "}
+          <Link to="/login" className="switch-link">
+            Log in here
+          </Link>
+        </div>
       </div>
     </div>
   );
