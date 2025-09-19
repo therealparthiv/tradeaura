@@ -1,7 +1,7 @@
 // src/dashboard_components/TopBar.js
 
 import React, { useContext } from "react";
-import { GeneralContext } from "./GeneralContext";
+import GeneralContext from "./GeneralContext";
 import Search from "./Search";
 import styles from "./TopBar.css"; // Use CSS Modules
 import axios from "../utils/axiosInstance"; // Correct axios import path

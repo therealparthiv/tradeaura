@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "../utils/axiosInstance";
-import { GeneralContext } from "./GeneralContext";
+import GeneralContext from "./GeneralContext";
 import "./BuyActionWindow.css"; // Using the new, professional styles
 import BoltIcon from "@mui/icons-material/Bolt"; // For a nice touch
 

@@ -9,7 +9,7 @@ import Summary from "./Summary";
 import WatchList from "./WatchList";
 import BuyActionWindow from "./BuyActionWindow";
 import StockChartModal from "./StockChartModal";
-import { GeneralContext } from "./GeneralContext";
+import GeneralContext from "./GeneralContext";
 import "./Dashboard.css";
 
 const Dashboard = () => {

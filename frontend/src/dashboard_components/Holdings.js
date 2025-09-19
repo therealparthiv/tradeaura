@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "../utils/axiosInstance";
 import { DoughnutChart } from "./DoughnoutChart";
-import { GeneralContext } from "./GeneralContext";
+import GeneralContext from "./GeneralContext";
 import "./Holdings.css";
 
 const Holdings = () => {
