@@ -11,37 +11,31 @@ import BuyActionWindow from "./BuyActionWindow";
 import StockChartModal from "./StockChartModal";
 import GeneralContext from "./GeneralContext";
 import "./Dashboard.css";
+import TopBar from "./TopBar";
 
 const Dashboard = () => {
-  const { buyWindow, chartWindow, closeChartWindow } =
-    useContext(GeneralContext);
+  const { buyWindow, stockChart } = useContext(GeneralContext);
 
   return (
     <div className="dashboard-layout">
-      <div className="dashboard-sidebar">
-        <WatchList />
-      </div>
+      <TopBar />
       <main className="dashboard-main">
-        <Routes>
-          <Route exact path="/" element={<Summary />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/holdings" element={<Holdings />} />
-          <Route path="/positions" element={<Positions />} />
-          <Route path="/funds" element={<Funds />} />
-          <Route path="/apps" element={<Apps />} />
-        </Routes>
+        <div className="dashboard-content">
+          <Routes>
+            <Route index element={<Summary />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="holdings" element={<Holdings />} />
+            <Route path="positions" element={<Positions />} />
+            <Route path="funds" element={<Funds />} />
+            <Route path="apps" element={<Apps />} />
+          </Routes>
+        </div>
+        <WatchList />
       </main>
-
       {buyWindow.isOpen && (
         <BuyActionWindow uid={buyWindow.uid} mode={buyWindow.mode} />
       )}
-
-      {chartWindow.isOpen && (
-        <StockChartModal
-          symbol={chartWindow.symbol}
-          onClose={closeChartWindow}
-        />
-      )}
+      {stockChart.isOpen && <StockChartModal uid={stockChart.uid} />}
     </div>
   );
 };

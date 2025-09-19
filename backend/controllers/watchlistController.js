@@ -1,51 +1,54 @@
-const Watchlist = require("../model/WatchlistModel");
+const User = require("../model/User");
 
-exports.getWatchlist = async (req, res) => {
+// GET the user's watchlist
+module.exports.get_watchlist = async (req, res) => {
   try {
-    const watchlist = await Watchlist.findOne({ user: req.user._id });
-    if (!watchlist) return res.json({ stocks: [] });
-    res.json(watchlist); // sends { _id, user, stocks }
+    // res.locals.user is attached from the requireAuth middleware
+    const user = res.locals.user;
+    await user.populate("watchlist");
+    res.status(200).json({ watchlist: user.watchlist });
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch watchlist" });
+    console.error("Error fetching watchlist:", err);
+    res.status(400).json({ error: "Could not retrieve watchlist" });
   }
 };
 
-exports.addStock = async (req, res) => {
+// ADD an item to the user's watchlist
+module.exports.add_to_watchlist = async (req, res) => {
+  const { uid, name } = req.body;
   try {
-    const { symbol } = req.body;
-    if (!symbol) return res.status(400).json({ error: "Symbol is required" });
-
-    let watchlist = await Watchlist.findOne({ user: req.user._id });
-    if (!watchlist) {
-      watchlist = new Watchlist({ user: req.user._id, stocks: [] });
+    const user = res.locals.user;
+    // Check if the item is already in the watchlist
+    const exists = user.watchlist.some((item) => item.uid === uid);
+    if (exists) {
+      return res.status(409).json({ error: "Item already in watchlist" });
     }
-
-    if (watchlist.stocks.some((s) => s.symbol === symbol)) {
-      return res.status(400).json({ error: "Stock already in watchlist" });
-    }
-
-    watchlist.stocks.push({ symbol });
-    await watchlist.save();
-
-    res.json(watchlist);
+    user.watchlist.push({ uid, name });
+    await user.save();
+    res
+      .status(201)
+      .json({ message: "Added to watchlist", item: { uid, name } });
   } catch (err) {
-    res.status(500).json({ error: "Failed to add stock" });
+    console.error("Error adding to watchlist:", err);
+    res.status(400).json({ error: "Could not add to watchlist" });
   }
 };
 
-exports.removeStock = async (req, res) => {
+// REMOVE an item from the user's watchlist
+module.exports.remove_from_watchlist = async (req, res) => {
+  const { uid } = req.params; // Get uid from URL parameter
   try {
-    const { symbol } = req.params;
-    let watchlist = await Watchlist.findOne({ user: req.user._id });
-
-    if (!watchlist)
-      return res.status(404).json({ error: "Watchlist not found" });
-
-    watchlist.stocks = watchlist.stocks.filter((s) => s.symbol !== symbol);
-    await watchlist.save();
-
-    res.json(watchlist);
+    const user = res.locals.user;
+    // Find the index of the item to remove
+    const itemIndex = user.watchlist.findIndex((item) => item.uid === uid);
+    if (itemIndex === -1) {
+      return res.status(404).json({ error: "Item not found in watchlist" });
+    }
+    user.watchlist.splice(itemIndex, 1);
+    await user.save();
+    res.status(200).json({ message: "Removed from watchlist" });
   } catch (err) {
-    res.status(500).json({ error: "Failed to remove stock" });
+    console.error("Error removing from watchlist:", err);
+    res.status(400).json({ error: "Could not remove from watchlist" });
   }
 };

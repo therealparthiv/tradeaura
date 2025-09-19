@@ -1,76 +1,71 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const User = require("../model/User");
+const jwt = require("jsonwebtoken");
 
+// (Keep the existing handleErrors, createToken, signup_post, login_post, logout_get functions as they are)
+
+const handleErrors = (err) => {
+  let errors = { email: "", password: "" };
+  if (err.message === "incorrect email")
+    errors.email = "that email is not registered";
+  if (err.message === "incorrect password")
+    errors.password = "incorrect password";
+  if (err.code === 11000) {
+    errors.email = "that email is already registered";
+    return errors;
+  }
+  if (err.message.includes("user validation failed")) {
+    Object.values(err.errors).forEach(({ properties }) => {
+      errors[properties.path] = properties.message;
+    });
+  }
+  return errors;
+};
+
+const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: maxAge,
   });
 };
 
-// SIGNUP
-exports.signup = async (req, res) => {
-  const { name, email, password } = req.body;
-  try {
-    const existing = await User.findOne({ email });
-    if (existing)
-      return res.status(400).json({ message: "Email already exists" });
-
-    const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hash });
-    const token = createToken(user._id);
-
-    // ✅ Production-ready cookie settings
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      })
-      .json({ message: "User registered", user: { name, email } });
-  } catch (err) {
-    res.status(500).json({ message: "Signup error", error: err.message });
-  }
-};
-
-// LOGIN
-exports.login = async (req, res) => {
+module.exports.signup_post = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ message: "Invalid credentials" });
-
+    const user = await User.create({ email, password });
     const token = createToken(user._id);
-
-    // ✅ Production-ready cookie settings
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      })
-      .json({ message: "Login successful", user: { name: user.name, email } });
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(201).json({ user: user._id });
   } catch (err) {
-    res.status(500).json({ message: "Login error", error: err.message });
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
   }
 };
 
-// GET PROFILE (Protected)
-exports.getProfile = async (req, res) => {
-  res.json({ message: "Profile loaded", user: req.user });
+module.exports.login_post = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.login(email, password);
+    const token = createToken(user._id);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(200).json({ user: user._id });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
+  }
 };
 
-// LOGOUT
-exports.logout = (req, res) => {
-  // ✅ Production-ready cookie settings
-  res
-    .clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    })
-    .json({ message: "Logged out" });
+module.exports.logout_get = (req, res) => {
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.redirect("/");
+};
+
+// NEW FUNCTION TO GET USER DETAILS
+module.exports.user_details_get = async (req, res) => {
+  // res.locals.user is attached by the requireAuth middleware
+  try {
+    // We only send back non-sensitive data
+    res.status(200).json({ email: res.locals.user.email });
+  } catch (err) {
+    res.status(400).json({ error: "Could not retrieve user details" });
+  }
 };
