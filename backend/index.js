@@ -16,11 +16,13 @@ const authMiddleware = require("./middleware/authMiddleware");
 const app = express();
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
+const frontendURL = process.env.FRONTEND_URL; // Add this to your .env file
 
 // --- Middleware Setup ---
+// ✅ CORRECTED: Use a specific origin from environment variables for security
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: frontendURL,
     credentials: true,
   })
 );
@@ -46,8 +48,6 @@ app.get("/api/user-details", authMiddleware, (req, res) => {
 });
 
 // --- Core Trading Endpoints ---
-
-// ✅ Create a new, detailed order
 app.post("/newOrder", authMiddleware, async (req, res) => {
   const { name, qty, price, mode, product, orderType, triggerPrice } = req.body;
   const userId = req.user._id;
@@ -74,7 +74,6 @@ app.post("/newOrder", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Fetch all orders for the logged-in user
 app.get("/api/orders", authMiddleware, async (req, res) => {
   try {
     const orders = await OrderModel.find({ userId: req.user._id }).sort({
@@ -86,7 +85,6 @@ app.get("/api/orders", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Calculate CNC (Long-term) holdings
 app.get("/api/holdings", authMiddleware, async (req, res) => {
   const userId = req.user._id;
   try {
@@ -122,7 +120,6 @@ app.get("/api/holdings", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Calculate MIS (Intraday) positions
 app.get("/api/positions", authMiddleware, async (req, res) => {
   const userId = req.user._id;
   try {
@@ -150,7 +147,6 @@ app.get("/api/positions", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ ACCURATE Portfolio History from Your Actual Orders
 app.get("/api/portfolio-history", authMiddleware, async (req, res) => {
   try {
     const orders = await OrderModel.find({ userId: req.user._id }).sort({

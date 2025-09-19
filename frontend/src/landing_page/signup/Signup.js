@@ -32,11 +32,7 @@ const Signup = () => {
         <h2>Create an Account</h2>
         <p className="subtitle">Join us today and start your journey</p>
 
-        {error && (
-          <div className="error-message show" style={{ marginBottom: "1rem" }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message show">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">

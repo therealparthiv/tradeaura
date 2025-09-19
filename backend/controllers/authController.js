@@ -20,11 +20,12 @@ exports.signup = async (req, res) => {
     const user = await User.create({ name, email, password: hash });
     const token = createToken(user._id);
 
+    // ✅ Production-ready cookie settings
     res
       .cookie("token", token, {
         httpOnly: true,
-        sameSite: "Lax",
-        secure: false, // ✅ false for localhost, true in prod with HTTPS
+        secure: true,
+        sameSite: "none",
       })
       .json({ message: "User registered", user: { name, email } });
   } catch (err) {
@@ -44,11 +45,12 @@ exports.login = async (req, res) => {
 
     const token = createToken(user._id);
 
+    // ✅ Production-ready cookie settings
     res
       .cookie("token", token, {
         httpOnly: true,
-        sameSite: "Lax", // ✅ cross-origin cookie sharing
-        secure: false, // ✅ only false for local testing
+        secure: true,
+        sameSite: "none",
       })
       .json({ message: "Login successful", user: { name: user.name, email } });
   } catch (err) {
@@ -63,5 +65,12 @@ exports.getProfile = async (req, res) => {
 
 // LOGOUT
 exports.logout = (req, res) => {
-  res.clearCookie("token").json({ message: "Logged out" });
+  // ✅ Production-ready cookie settings
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    })
+    .json({ message: "Logged out" });
 };

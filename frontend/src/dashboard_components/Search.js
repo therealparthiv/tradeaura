@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import axios from "../utils/axiosInstance";
-import GeneralContext from "./GeneralContext";
+import { GeneralContext } from "./GeneralContext";
 import SearchIcon from "@mui/icons-material/Search"; // 1. Import the icon
 import "./Search.css";
 

@@ -1,8 +1,11 @@
+// src/utils/axiosInstance.js
+
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:3002", // your backend
-  withCredentials: true, // ✅ send cookies
+  // The proxy in vercel.json will handle routing this to the backend
+  baseURL: "/api",
+  withCredentials: true, // Crucial for sending the auth cookie
 });
 
 export default instance;

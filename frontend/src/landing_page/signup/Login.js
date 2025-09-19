@@ -14,11 +14,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // clear any previous errors
+    setError("");
     setIsLoading(true);
     try {
-      await axios.post("/api/auth/login", form);
-      window.location.href = "http://localhost:3001"; // redirect to dashboard app
+      // ✅ CORRECTED: Removed the duplicate "/api" prefix
+      await axios.post("/auth/login", form);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
