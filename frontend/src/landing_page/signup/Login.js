@@ -17,8 +17,7 @@ const Login = () => {
     setError("");
     setIsLoading(true);
     try {
-      // ✅ CORRECTED: Removed the duplicate "/api" prefix
-      await axios.post("/auth/login", form);
+      await axios.post("/api/auth/login", form);
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");

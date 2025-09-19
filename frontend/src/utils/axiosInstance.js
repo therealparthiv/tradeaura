@@ -4,7 +4,7 @@ import axios from "axios";
 
 const instance = axios.create({
   // The proxy in vercel.json will handle routing this to the backend
-  baseURL: "/api",
+  baseURL: "/",
   withCredentials: true, // Crucial for sending the auth cookie
 });
 

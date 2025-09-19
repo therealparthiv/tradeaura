@@ -3,11 +3,11 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import axios from "./utils/axiosInstance";
 
-// --- Global Styles ---
+// Global Styles
 import "./index.css";
 import "./App.css";
 
-// --- Layout & Public Page Components ---
+// Layout & Public Page Components
 import NavBar from "./landing_page/NavBar";
 import Footer from "./landing_page/Footer";
 import HomePage from "./landing_page/home/HomePage";
@@ -17,22 +17,21 @@ import PricingPage from "./landing_page/pricing/PricingPage";
 import LearnPage from "./landing_page/learn/LearnPage";
 import NotFound from "./landing_page/NotFound";
 
-// --- Auth Components ---
+// Auth Components
 import Login from "./landing_page/signup/Login";
 import Signup from "./landing_page/signup/Signup";
 
-// --- MERGED DASHBOARD COMPONENTS ---
+// --- RESTORED DASHBOARD COMPONENTS ---
 import { GeneralContextProvider } from "./dashboard_components/GeneralContext";
 import Home from "./dashboard_components/Home";
 
-// --- PROTECTED ROUTE COMPONENT ---
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get("/auth/profile");
+        await axios.get("/api/auth/profile");
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);
@@ -61,7 +60,7 @@ root.render(
         <NavBar />
         <main style={{ flex: 1 }}>
           <Routes>
-            {/* --- Public Routes --- */}
+            {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/about" element={<AboutPage />} />
@@ -70,7 +69,7 @@ root.render(
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
-            {/* --- Protected & Integrated Dashboard Route --- */}
+            {/* Protected Dashboard Route */}
             <Route
               path="/dashboard/*"
               element={
@@ -82,7 +81,6 @@ root.render(
               }
             />
 
-            {/* --- 404 Not Found Route --- */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
